@@ -1,0 +1,19 @@
+.header {
+    display: flex;
+    align-items: center;  /* Vertically align items */
+    padding: 10px;
+    background-color: #f8f9fa;
+  }
+  .nav {
+    display: flex;
+    align-items: center;  /* Vertically align items */
+  }
+  .nav a {
+    text-decoration: none;  /* Remove underline */
+    color: #000;            /* Set text color */
+    margin: 0 15px;         /* Add spacing between links */
+  }
+  
+  .nav a:hover {
+    color: #007bff;  /* Change color on hover (optional) */
+  }
