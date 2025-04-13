@@ -5,6 +5,7 @@ import Header from './Component/Header';
 import MainPage from './Component/MainPage';
 import Login from './Component/Login';
 import Register from './Component/Register.js';
+import UpdateUser from './Component/UpdateUser.js';
 function App() {
   return (
     <div>
@@ -18,6 +19,7 @@ function App() {
               <Route path='/' element={<MainPage />}></Route>
               <Route path='/login' element={<Login />}></Route>
               <Route path='/register' element={<Register />}></Route>
+              <Route path='/update/:user_email/:user_name/:user_password' element={<UpdateUser />}></Route>
             </Routes>
           </Row>
         </Router>
