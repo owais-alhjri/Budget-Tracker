@@ -17,3 +17,95 @@
   .nav a:hover {
     color: #007bff;  /* Change color on hover (optional) */
   }
+
+
+  .createBudget-container {
+    background-color: #F4F2F2; /* Clean white background */
+    width: 400px; /* Fixed width */
+    height: 270px; /* Fixed height */
+    padding: 10px; /* Balanced padding */
+    border-radius: 15px; /* Softer rounded corners */
+    border: 1px solid #dcdcdc; /* Subtle solid border for a cleaner look */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Adds a slight shadow for depth */
+    box-sizing: border-box; /* Ensures padding doesn't affect width/height */
+    font-family: Arial, sans-serif; /* Consistent font style */
+    color: #333; /* Neutral text color */
+    margin: 20px auto; /* Centers the container */
+    display: flex; /* Flexbox for alignment */
+    flex-direction: column; /* Stack children vertically */
+    justify-content: space-between; /* Space out children evenly */
+}
+
+.createBudget-container p{
+  font-weight: bold;
+  text-indent: 12.5px;
+}
+
+.btn-create {
+  display: flex; /* Use flexbox for alignment */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  margin-top: 20px; /* Optional: Add spacing above the button */
+}
+select.form-control {
+  background-image: url("./Group\ 1.png"); /* Path to your image */
+  background-repeat: no-repeat;
+  background-position: right 10px center; /* Position the arrow */
+  background-size: 10px; /* Size of the arrow */
+
+}
+
+.budget-box {
+  border: 2px solid #7a0000;
+  border-radius: 15px;
+  padding: 20px;
+  max-width: 400px;
+  font-family: Arial, sans-serif;
+  color: #7a0000;
+  background-color: #f9f9f9;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.custom-progress-bar {
+  background-color: #ccc;
+  border-radius: 10px;
+  overflow: hidden;
+  height: 20px;
+  margin-bottom: 10px;
+}
+
+.custom-progress-fill {
+  background-color: #7a0000; /* Deep red */
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.labels {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  color: #000;
+}
+.btn-view {
+  background-color: #7a0000 !important; /* Force the background color */
+  color: #fff; /* Ensure the text is visible on the dark background */
+  border: none; /* Remove any default border */
+  padding: 10px 20px; /* Add padding for better appearance */
+  border-radius: 5px; /* Rounded corners */
+  font-size: 16px; /* Adjust font size */
+  cursor: pointer; /* Change cursor to pointer */ 
+   display: flex; /* Use flexbox for alignment */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+}
+
+.btn-view:hover {
+  background-color: #a00000 !important; /* Slightly lighter color on hover */
+}
+

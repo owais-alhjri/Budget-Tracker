@@ -2,7 +2,9 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import UserModel from "./Models/UserModel.js";
+import BudgetModel from "./Models/BudgetModel.js";
 import bcrypt from "bcrypt";
+import ExpenseModel from "./Models/ExpensModel.js";
 
 const app = express();
 app.use(express.json());
@@ -59,6 +61,53 @@ app.get('/userList', async (req, res)=>{
     }catch(error){
         res.status(500).json({error:"An error occurred while fetching users"});
         
+    }
+});
+
+app.get('/categoryList', async(req, res)=>{
+    try{
+        const categoryList = await BudgetModel.find();
+        res.status(200).json(categoryList);
+    }catch(error){
+        res.status(500).json({error:"AN error occurred while fetching Category"});
+
+    }
+});
+
+app.post('/createBudget', async(req, res)=>{
+    try{
+        const budgetName = req.body.budgetName;
+        const Amount = req.body.Amount;
+
+        const budget = new BudgetModel({
+            budgetName :budgetName,
+            Amount:Amount
+        });
+
+        await budget.save();
+        res.send({budget:budget,msg:"Added."})
+    }catch(error){
+        res.status(500).json({error:"An error occurred"});
+    }
+
+});
+
+
+app.post('/createExpense', async (req, res) => {
+    try{    
+        const ExpenseName = ExpenseModel.body.ExpenseName;
+        const ExpenseAmount = ExpenseModel.body.ExpenseAmount;
+        const Category = ExpenseModel.body.category;
+        const expense = new ExpenseModel({
+            ExpenseName :ExpenseName,
+            ExpenseAmount:ExpenseAmount,
+            Category:Category,
+        });
+        await expense.save();
+        res.send({expense:expense,msg:"Added"});
+    }catch(error){
+        res.status(500).json({error:"An error occurred"});
+
     }
 })
 app.listen(3001, () =>{

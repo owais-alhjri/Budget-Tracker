@@ -1,5 +1,5 @@
 import { Button, Container, Row, Col, Table } from "reactstrap";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useEffect, useState } from "react";
@@ -10,7 +10,7 @@ import axios from "axios";
 
 const Register = () => {
   const dispatch = useDispatch();
-  const userList = useSelector((state) => state.users.user);
+  //const userList = useSelector((state) => state.users.user);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
