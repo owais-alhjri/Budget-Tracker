@@ -1,18 +1,20 @@
 import { Button, Col, Container, Input, Row } from "reactstrap";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addBudget, createBudget } from "../Features/BudgetSlice";
 
 const CreateBudget = () => {
+  const userId = useSelector((state)=>state.users.user._id);
   const dispatch = useDispatch();
   const [budgetName, setBudgetName] = useState("");
   const [Amount, setAmount] = useState(0);
 
-  const handleSubmit=(e)=>{
-    e.preventDefault();
+  const handleSubmit=()=>{
+    //e.preventDefault();
     const budget = {
       budgetName:budgetName,
       Amount:Amount,
+      user:userId,
     };
     console.log(budget);
     dispatch(createBudget(budget));

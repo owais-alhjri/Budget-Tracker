@@ -72,6 +72,9 @@ export const userSlice = createSlice({
                 return user;
             });
         },
+        setUser: (state, action)=>{
+            state.user = action.payload;
+        }
     },
     extraReducers:(builder)=>{
         builder.addCase(registerUser.pending,(state)=>{
@@ -93,6 +96,8 @@ export const userSlice = createSlice({
             state.user = action.payload || [];
             state.isLoading = false;
             state.isSuccess = true;
+
+            localStorage.setItem("user",JSON.stringify(action.payload));
         })
         .addCase(login.rejected,(state)=>{
             state.isLoading = false;
@@ -105,6 +110,7 @@ export const userSlice = createSlice({
             state.user = {email: '',name:''};
             state.isLoading = false;
             state.isSuccess = false;
+            localStorage.removeItem("user");
         })
         .addCase(logout.rejected,(state)=>{
             state.isLoading = false;
@@ -113,5 +119,5 @@ export const userSlice = createSlice({
     },
 });
 
-export const {addUser,deleteUser,updateUser} = userSlice.actions;
+export const {addUser,deleteUser,updateUser,setUser} = userSlice.actions;
 export default userSlice.reducer;

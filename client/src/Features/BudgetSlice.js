@@ -11,6 +11,7 @@ export const createBudget = createAsyncThunk('budgets/createBudget',
             const response = await axios.post("http://localhost:3001/createBudget",{
                 budgetName:budgetData.budgetName,
                 Amount:budgetData.Amount,
+                user:budgetData.user,
             });
             const budget = response.data.budget;
             return budget;
@@ -34,5 +35,5 @@ export const budgetSlice = createSlice({
         },
     }
 });
-export const {addBudget} = budgetSlice.actions;
+export const {addExpense,addBudget} = budgetSlice.actions;
 export default budgetSlice.reducer;

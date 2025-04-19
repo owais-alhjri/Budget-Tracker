@@ -9,6 +9,11 @@ const BudgetSchema = mongoose.Schema({
         type:Number,
         required:true,
     },
+    user:{
+        type:mongoose.Schema.ObjectId,
+        ref:"userInfo",
+        required:true,
+    },
 
 });
 

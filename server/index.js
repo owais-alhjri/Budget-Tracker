@@ -4,7 +4,7 @@ import cors from "cors";
 import UserModel from "./Models/UserModel.js";
 import BudgetModel from "./Models/BudgetModel.js";
 import bcrypt from "bcrypt";
-import ExpenseModel from "./Models/ExpensModel.js";
+import ExpenseModel from './Models/ExpenseModel.js';
 
 const app = express();
 app.use(express.json());
@@ -12,10 +12,10 @@ app.use(cors());
 
 const connectString = "mongodb+srv://owais:owais@users.lqkcx1u.mongodb.net/?retryWrites=true&w=majority&appName=users";
 
-mongoose.connect(connectString,{
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});
+mongoose.connect(connectString)
+    .then(() => console.log("Connected to MongoDB"))
+    .catch((error) => console.error("Error connecting to MongoDB:", error));
+    
 app.post("/registerUser", async (req, res)=>{
     try{
         const name = req.body.name;
@@ -66,9 +66,15 @@ app.get('/userList', async (req, res)=>{
 
 app.get('/categoryList', async(req, res)=>{
     try{
-        const categoryList = await BudgetModel.find();
+        const { user } = req.query;
+        if (!mongoose.Types.ObjectId.isValid(user)) {
+            return res.status(400).json({ error: "Invalid user ID" });
+        }
+        const categoryList = await BudgetModel.find({user})
+        .populate("user","name email");
         res.status(200).json(categoryList);
     }catch(error){
+        console.error("Error fetching category list:", error);
         res.status(500).json({error:"AN error occurred while fetching Category"});
 
     }
@@ -76,12 +82,15 @@ app.get('/categoryList', async(req, res)=>{
 
 app.post('/createBudget', async(req, res)=>{
     try{
-        const budgetName = req.body.budgetName;
-        const Amount = req.body.Amount;
+        const {budgetName,Amount,user} = req.body;
 
+        if(!mongoose.Types.ObjectId.isValid(user)){
+            return res.status(400).json({error:"Invalid user Id"});
+        }
         const budget = new BudgetModel({
-            budgetName :budgetName,
-            Amount:Amount
+            budgetName,
+            Amount,
+            user,
         });
 
         await budget.save();
@@ -95,13 +104,19 @@ app.post('/createBudget', async(req, res)=>{
 
 app.post('/createExpense', async (req, res) => {
     try{    
-        const ExpenseName = ExpenseModel.body.ExpenseName;
-        const ExpenseAmount = ExpenseModel.body.ExpenseAmount;
-        const Category = ExpenseModel.body.category;
+
+        const {ExpenseName, ExpenseAmount, category, user} = req.body;
+        if(!mongoose.Types.ObjectId.isValid(category)){
+            return res.status(400).json({error:"Invalid category"});
+        }
+        if(!mongoose.Types.ObjectId.isValid(user)){
+            return res.status(400).json({error:"Invalid user Id"});
+        }
         const expense = new ExpenseModel({
-            ExpenseName :ExpenseName,
-            ExpenseAmount:ExpenseAmount,
-            Category:Category,
+            ExpenseName,
+            ExpenseAmount,
+            category,
+            user,
         });
         await expense.save();
         res.send({expense:expense,msg:"Added"});
@@ -109,7 +124,8 @@ app.post('/createExpense', async (req, res) => {
         res.status(500).json({error:"An error occurred"});
 
     }
-})
+});
+
 app.listen(3001, () =>{
     console.log("You are connected");
 })

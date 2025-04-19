@@ -6,7 +6,18 @@ import MainPage from './Component/MainPage';
 import Login from './Component/Login';
 import Register from './Component/Register.js';
 import UpdateUser from './Component/UpdateUser.js';
+import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
+import { setUser } from './Features/UserSlice.js';
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() =>{
+    const storedUser = localStorage.getItem("user");
+    if(storedUser){
+      dispatch(setUser(JSON.parse(storedUser)));
+    }
+  },[dispatch]);
   return (
     <div>
       <Container>

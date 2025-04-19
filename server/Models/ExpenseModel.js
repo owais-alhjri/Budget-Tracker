@@ -10,9 +10,17 @@ const ExpenseSchema = mongoose.Schema({
         required:true,
     },
     category:{
-        type:String,
+        type:mongoose.Schema.Types.ObjectId,
+        ref: 'BudgetInfo',
         required:true,
     },
+    user:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"userInfo",
+        required:true,
+    },
+
+    
 });
 
 const ExpenseModel = mongoose.model("ExpenseInfo",ExpenseSchema);
