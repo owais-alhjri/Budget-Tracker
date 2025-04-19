@@ -14,16 +14,23 @@ const MainPage = () => {
             Welcome Back, <span style={{ color: "blue" }}>{name}</span>
           </h1>
         </Row>
+
         <Row>
           <Col md={6}>
             <CreateBudget />
           </Col>
+
           <Col md={6}>
             <Expense />
           </Col>
+
         </Row>
-        <Row>
-          <ExistingBudget />
+
+        <Row >
+          <Col >
+          <ExistingBudget  />
+          </Col>
+          
         </Row>
         <Row>
           <RecentExpense />

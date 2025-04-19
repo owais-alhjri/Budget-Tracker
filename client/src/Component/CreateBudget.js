@@ -1,7 +1,7 @@
 import { Button, Col, Container, Input, Row } from "reactstrap";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addBudget, createBudget } from "../Features/BudgetSlice";
+import { createBudget } from "../Features/BudgetSlice";
 
 const CreateBudget = () => {
   const userId = useSelector((state)=>state.users.user._id);
