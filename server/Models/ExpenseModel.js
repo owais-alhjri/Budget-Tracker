@@ -8,6 +8,7 @@ const ExpenseSchema = mongoose.Schema({
     ExpenseAmount:{
         type:Number,
         required:true,
+        default: 0,
     },
     category:{
         type:mongoose.Schema.Types.ObjectId,
@@ -19,9 +20,16 @@ const ExpenseSchema = mongoose.Schema({
         ref:"userInfo",
         required:true,
     },
-
+ 
     
-});
+},
+   {
+        timestamps: {
+          createdAt: true,
+          updatedAt: false, // Set to false to disable updatedAt
+        },
+      }
+);
 
 const ExpenseModel = mongoose.model("ExpenseInfo",ExpenseSchema);
 export default ExpenseModel;

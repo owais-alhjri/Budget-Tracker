@@ -79,6 +79,28 @@ app.get('/categoryList', async(req, res)=>{
 
     }
 });
+app.get('/expenseList', async (req, res) => {
+    try {
+      const { user } = req.query;
+  
+      if (!mongoose.Types.ObjectId.isValid(user)) {
+        return res.status(400).json({ error: "Invalid user ID" });
+      }
+  
+      // Fetch expenses and populate the category field to include budgetName
+      const expenseList = await ExpenseModel.find({ user })
+        .populate({
+          path: "category", // Populate the category field
+          select: "budgetName", // Only fetch the budgetName field
+        })
+        .populate("user", "name email"); // Optionally populate user details
+  
+      res.status(200).json(expenseList);
+    } catch (error) {
+      console.error("Error fetching expense list:", error);
+      res.status(500).json({ error: "An error occurred while fetching expenses." });
+    }
+  });
 
 app.post('/createBudget', async(req, res)=>{
     try{
@@ -105,7 +127,7 @@ app.post('/createBudget', async(req, res)=>{
 app.post('/createExpense', async (req, res) => {
     try{    
 
-        const {ExpenseName, ExpenseAmount, category, user} = req.body;
+        const {ExpenseName, ExpenseAmount, category,categoryName, user} = req.body;
         if(!mongoose.Types.ObjectId.isValid(category)){
             return res.status(400).json({error:"Invalid category"});
         }
@@ -116,6 +138,7 @@ app.post('/createExpense', async (req, res) => {
             ExpenseName,
             ExpenseAmount,
             category,
+            categoryName,
             user,
         });
         await expense.save();
