@@ -9,6 +9,8 @@ import UpdateUser from './Component/UpdateUser.js';
 import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import { setUser } from './Features/UserSlice.js';
+import BudgetDetails from './Component/BudgetDetails.js';
+import Profile from './Component/Profile.js';
 function App() {
   const dispatch = useDispatch();
 
@@ -28,8 +30,10 @@ function App() {
           <Row>
             <Routes>
               <Route path='/' element={<MainPage />}></Route>
+              <Route path='/profile' element={<Profile />}></Route>
               <Route path='/login' element={<Login />}></Route>
               <Route path='/register' element={<Register />}></Route>
+              <Route path='/BudgetDetails' element={<BudgetDetails />}></Route>
               <Route path='/update/:user_email/:user_name/:user_password' element={<UpdateUser />}></Route>
             </Routes>
           </Row>

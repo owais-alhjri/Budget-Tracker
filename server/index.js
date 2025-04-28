@@ -5,6 +5,11 @@ import UserModel from "./Models/UserModel.js";
 import BudgetModel from "./Models/BudgetModel.js";
 import bcrypt from "bcrypt";
 import ExpenseModel from './Models/ExpenseModel.js';
+import multer from "multer";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 
 const app = express();
 app.use(express.json());
@@ -16,6 +21,22 @@ mongoose.connect(connectString)
     .then(() => console.log("Connected to MongoDB"))
     .catch((error) => console.error("Error connecting to MongoDB:", error));
     
+const storage = multer.diskStorage({
+    destination:(req,file,cd) =>{
+        cd(null,"uploads/");
+    },
+    filename:(req, file,cd)=>{
+        cd(null, Date.now() + "-" + file.originalname);
+    },
+});
+const upload = multer({storage:storage});
+
+const __filename = fileURLToPath(import.meta.url);
+
+const __dirname = dirname(__filename);
+
+app.use("/uploads", express.static(__dirname + "/uploads"));
+
 app.post("/registerUser", async (req, res)=>{
     try{
         const name = req.body.name;
@@ -148,6 +169,60 @@ app.post('/createExpense', async (req, res) => {
 
     }
 });
+app.put(
+  "/updateUserProfile/:email/",
+  upload.single("profilePic"), 
+  async (req, res) => {
+    const email = req.params.email;
+    const name = req.body.name;
+    const password = req.body.password;
+
+    try {
+      const userToUpdate = await UserModel.findOne({ email: email });
+
+      if (!userToUpdate) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      let profilePic = null;
+      if (req.file) {
+        profilePic = req.file.filename; 
+        if (userToUpdate.profilePic) {
+          const oldFilePath = path.join(
+            __dirname,
+            "uploads",
+            userToUpdate.profilePic
+          );
+          fs.unlink(oldFilePath, (err) => {
+            if (err) {
+              console.error("Error deleting file:", err);
+            } else {
+              console.log("Old file deleted successfully");
+            }
+          });
+          userToUpdate.profilePic = profilePic; 
+        }
+      } else {
+        console.log("No file uploaded");
+      }
+
+      userToUpdate.name = name;
+
+      if (password !== userToUpdate.password) {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        userToUpdate.password = hashedPassword;
+      } else {
+        userToUpdate.password = password; 
+      }
+
+      await userToUpdate.save();
+
+      res.send({ user: userToUpdate, msg: "Updated." });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+);
+  
 
 app.listen(3001, () =>{
     console.log("You are connected");

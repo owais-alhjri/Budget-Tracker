@@ -7,7 +7,33 @@ const initialState = {
     isSuccess:false,
     isError:false,
 };
-
+export const updateUserProfile = createAsyncThunk(
+    "user/updateUserProfile", 
+    async (userData) => {
+      try {
+     
+  
+        const response = await axios.put(
+          `http://localhost:3001/updateUserProfile/${userData.get("email")}`,
+          
+      userData,
+          
+          {
+            headers: {  
+              "Content-Type": "multipart/form-data", 
+            },
+          }
+        );
+  
+        const user = response.data.user;
+  
+        return user;
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  );
+  
 export const logout = createAsyncThunk('users/logout',
     async()=>{
         try{
@@ -116,6 +142,18 @@ export const userSlice = createSlice({
             state.isLoading = false;
             state.isError = true;
         })
+        .addCase(updateUserProfile.pending,(state)=>{
+            state.isLoading = true;
+        })
+        .addCase(updateUserProfile.fulfilled, (state, action) => {
+          state.user = action.payload;
+          state.isLoading = false;
+        })
+        .addCase(updateUserProfile.rejected, (state) => {
+          state.isLoading = false;
+          state.isError = true;
+        });
+  
     },
 });
 

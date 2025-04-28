@@ -1,4 +1,4 @@
-import { Button, Container, Row, Table } from "reactstrap";
+import { Table } from "reactstrap";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -24,12 +24,11 @@ const RecentExpense = () => {
   }, [userId]);
   return (
     <div>
-      <h1>RecentExpense</h1>
+      <h1>Recent Expense</h1>
 
       <div className="expense-list">
-        <h5>Expenses:</h5>
         {expenseList.length > 0 ? (
-          <Table bordered hover responsive className="text-center">
+          <Table hover responsive striped className="text-center">
             <thead>
               <tr>
                 <th>Name</th>
@@ -39,29 +38,29 @@ const RecentExpense = () => {
               </tr>
             </thead>
             <tbody>
-  {expenseList
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort by createdAt in descending order
-    .slice(0, 5) // Get the last 5 added expenses
-    .map((expense) => {
-      // Safely format the createdAt date
-      let formattedDate = "Invalid Date";
-      if (expense.createdAt) {
-        const date = new Date(expense.createdAt);
-        if (!isNaN(date)) {
-          formattedDate = date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
-        }
-      }
+              {expenseList
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort by createdAt in descending order
+                .slice(0, 5) // Get the last 5 added expenses
+                .map((expense) => {
+                  // Safely format the createdAt date
+                  let formattedDate = "Invalid Date";
+                  if (expense.createdAt) {
+                    const date = new Date(expense.createdAt);
+                    if (!isNaN(date)) {
+                      formattedDate = date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+                    }
+                  }
 
-      return (
-        <tr key={expense._id}>
-          <td>{expense.ExpenseName}</td>
-          <td>${expense.ExpenseAmount}</td>
-          <td>{formattedDate}</td>
-          <td>{expense.category?.budgetName || "No Category"}</td>
-        </tr>
-      );
-    })}
-</tbody>
+                  return (
+                    <tr key={expense._id}>
+                      <td>{expense.ExpenseName}</td>
+                      <td>${expense.ExpenseAmount}</td>
+                      <td>{formattedDate}</td>
+                      <td>{expense.category?.budgetName || "No Category"}</td>
+                    </tr>
+                  );
+                })}
+            </tbody>
           </Table>
         ) : (
           <p>No expenses for this category.</p>
