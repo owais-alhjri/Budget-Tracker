@@ -148,7 +148,6 @@ select.form-control {
   justify-content: flex-start; /* Align content to the top */
   width: 100vw; /* Full width of the viewport */
   height: 100vh; /* Full height of the viewport */
-  background-color: #f9f9f9; /* Light background color */
   padding: 40px; /* Add padding for spacing */
   box-sizing: border-box; /* Include padding in width/height */
   overflow-y: auto; /* Allow scrolling if content overflows */

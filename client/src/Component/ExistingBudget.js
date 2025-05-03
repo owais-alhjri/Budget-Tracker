@@ -37,7 +37,6 @@ const ExistingBudget = () => {
         <h1 className="existing-budgets-title">Existing Budgets</h1>
 
         {categoryList.map((category, index) => {
-          // Filter expenses for the current category
           const filteredExpenses = expenseList.filter(
             (expense) =>
               expense.category === category._id ||
@@ -53,8 +52,6 @@ const ExistingBudget = () => {
           if (isOverBudget) {
             Remaining = Math.abs(Remaining); 
           }
-          const colors = ["#36A2EB", "#FFCE56", "#9966FF", "#FF9F40",
-            "#FF6B6B", "#6BCB77", "#FFD93D", "#6A0572", "#1FAB89", "#DAA520","#FF6384"];
 
           return (
             <div

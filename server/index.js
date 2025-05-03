@@ -235,6 +235,17 @@ app.delete('/deleteExpense/:id', async(req, res)=>{
 }
 });
 
+app.delete("/deleteBudget/:id",async(req, res)=>{
+  try{
+      const {id} = req.params;
+      await BudgetModel.findByIdAndDelete(id);
+      res.status(200).json({message:"Budget deleted successfully"});
+  }catch(error){
+    console.error("Error deleting budget:", error);
+    res.status(500).send({ error: 'Failed to delete budget' });  }
+
+});
+
 app.listen(3001, () =>{
     console.log("You are connected");
 })

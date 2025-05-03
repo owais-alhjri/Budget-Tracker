@@ -1,12 +1,14 @@
-import { useEffect, useRef, useMemo,useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useEffect, useRef, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Chart } from "chart.js/auto";
-import { Button } from "reactstrap";
+import { Button, Table } from "reactstrap";
 import { useDispatch } from "react-redux";
 import { deleteExpense } from "../Features/ExpenseSlice";
+import { deleteBudget } from "../Features/BudgetSlice";
 
 const BudgetDetails = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const location = useLocation();
   const { category, expenses = [] } = location.state || {};
   const [localExpenses, setLocalExpenses] = useState(expenses); // Local state
@@ -25,7 +27,6 @@ const BudgetDetails = () => {
   }
   const predefinedColors = useMemo(
     () => [
-      "#FF6384",
       "#36A2EB",
       "#FFCE56",
       "#4BC0C0",
@@ -37,6 +38,7 @@ const BudgetDetails = () => {
       "#6A0572",
       "#1FAB89",
       "#DAA520",
+      "#FF6384",
     ],
     []
   );
@@ -88,15 +90,14 @@ const BudgetDetails = () => {
     };
   }, [localExpenses, predefinedColors]); // Update dependency to localExpenses
 
-  const handleDelete = async (expenseId) => {
-    try {
-      await dispatch(deleteExpense(expenseId)).unwrap(); // Wait for the delete action to complete
-      setLocalExpenses((prevExpenses) =>
-        prevExpenses.filter((expense) => expense._id !== expenseId)
-      ); // Update local state
-    } catch (error) {
-      console.error("Failed to delete expense:", error);
-    }
+  const handleDelete = (expenseId) => {
+    dispatch(deleteExpense(expenseId));
+    navigate("/");
+  };
+
+  const handleDeleteBudget = (budgetId) => {
+    dispatch(deleteBudget(budgetId));
+    navigate("/");
   };
 
   return (
@@ -104,50 +105,95 @@ const BudgetDetails = () => {
       <h1>Budget Details</h1>
       {category ? (
         <div>
-          <div className="budget-header">
-            <span className="budget-name">{category.budgetName}</span>
-            <span className="budget-amount">${category.Amount} Budgeted</span>
-          </div>
-          <div className="custom-progress-bar">
-            <div
-              className="custom-progress-fill"
-              style={{
-                width: `${Math.min(
-                  (totalSpent / category.Amount) * 100,
-                  100
-                )}%`,
-                backgroundColor: isOverBudget ? "#ff0000" : "#9cb380",
-              }}
-            ></div>
-          </div>
-          <div className="budget-labels">
-            <span className="spent-amount">${totalSpent} Spent</span>
-            {isOverBudget ? (
-              <span className="remaining-amount over-budget-text">
-                Over Budget by ${Remaining}
+          <div
+            className={`budget-card ${
+              category.Amount > 1000 ? "high-budget" : "low-budget"
+            } ${isOverBudget ? "over-budget" : ""}`}
+            style={{ borderColor: category.color }}
+          >
+            <div className="budget-header">
+              <span className="budget-name" style={{ color: category.color }}>
+                {category.budgetName}
               </span>
-            ) : (
-              <span className="remaining-amount">${Remaining} Remaining</span>
-            )}
+              <span className="budget-amount" style={{ color: category.color }}>
+                ${category.Amount} Budgeted
+              </span>
+            </div>
+            <div className="custom-progress-bar">
+              <div
+                className="custom-progress-fill"
+                style={{
+                  width: `${Math.min(
+                    (totalSpent / category.Amount) * 100,
+                    100
+                  )}%`,
+                  backgroundColor: isOverBudget ? "#ff0000" : "#9cb380",
+                }}
+              ></div>
+            </div>
+            <div className="budget-labels">
+              <span className="spent-amount" style={{ color: category.color }}>
+                ${totalSpent} Spent
+              </span>
+              {isOverBudget ? (
+                <span
+                  className="remaining-amount over-budget-text"
+                  style={{ color: category.color }}
+                >
+                  Over Budget by ${Remaining}
+                </span>
+              ) : (
+                <span
+                  className="remaining-amount"
+                  style={{ color: category.color }}
+                >
+                  ${Remaining} Remaining
+                </span>
+              )}
+            </div>
           </div>
-          <h3>Expenses:</h3>
+          <h3>Expenses</h3>
           {localExpenses.length > 0 ? (
             <>
-              <ul>
-                {localExpenses.map((expense) => (
-                  <li key={expense._id}>
-                    {expense.ExpenseName}: ${expense.ExpenseAmount}
-                    <Button
-                      color="danger"
-                      size="sm"
-                      className="me-2"
-                      onClick={() => handleDelete(expense._id)}
-                    >
-                      delete
-                    </Button>
-                  </li>
-                ))}
-              </ul>
+          <Table hover responsive striped className="text-center">
+          <thead>
+              <tr>
+                <th>Name</th>
+                <th>Amount</th>
+                <th>Date</th>
+                <th>Edit</th>
+              </tr>
+            </thead>
+            <tbody>
+
+          {localExpenses.map((expense) => {
+            let formattedDate = "Invalid Date";
+            if (expense.createdAt) {
+              const date = new Date(expense.createdAt);
+              if (!isNaN(date)) {
+                formattedDate = date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+              }
+            }
+            return (
+              <tr key={expense._id}>
+                <td>{expense.ExpenseName}</td>
+                <td>${expense.ExpenseAmount}</td>
+                <td>{formattedDate}</td>
+                <td>
+                  <Button
+                    color="danger"
+                    size="sm"
+                    className="me-2"
+                    onClick={() => handleDelete(expense._id)}
+                  >
+                    delete
+                  </Button>
+                </td>
+              </tr>
+            );
+          })}
+                            </tbody>
+              </Table>
               <div
                 style={{ width: "100%", height: "400px", marginTop: "20px" }}
               >
@@ -161,6 +207,9 @@ const BudgetDetails = () => {
       ) : (
         <p>No budget details available.</p>
       )}
+      <Button color="danger" onClick={() => handleDeleteBudget(category._id)}>
+        Delete Budget
+      </Button>
     </div>
   );
 };
