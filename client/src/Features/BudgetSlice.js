@@ -12,6 +12,7 @@ export const createBudget = createAsyncThunk('budgets/createBudget',
                 budgetName:budgetData.budgetName,
                 Amount:budgetData.Amount,
                 user:budgetData.user,
+                color:budgetData.color,
             });
             const budget = response.data.budget;
             return budget;

@@ -125,7 +125,7 @@ app.get('/expenseList', async (req, res) => {
 
 app.post('/createBudget', async(req, res)=>{
     try{
-        const {budgetName,Amount,user} = req.body;
+        const {budgetName,Amount,user,color} = req.body;
 
         if(!mongoose.Types.ObjectId.isValid(user)){
             return res.status(400).json({error:"Invalid user Id"});
@@ -134,6 +134,7 @@ app.post('/createBudget', async(req, res)=>{
             budgetName,
             Amount,
             user,
+            color,
         });
 
         await budget.save();
@@ -223,6 +224,16 @@ app.put(
   }
 );
   
+app.delete('/deleteExpense/:id', async(req, res)=>{
+  try{
+    const {id} = req.params;
+    await ExpenseModel.findByIdAndDelete(id);
+    res.status(200).json({message:"Expense deleted successfully"});
+  } catch (error) {
+    console.error("Error deleting expense:", error);
+    res.status(500).send({ error: 'Failed to delete expense' });
+}
+});
 
 app.listen(3001, () =>{
     console.log("You are connected");

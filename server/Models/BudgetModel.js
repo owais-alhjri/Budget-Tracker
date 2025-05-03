@@ -14,6 +14,10 @@ const BudgetSchema = mongoose.Schema({
         ref:"userInfo",
         required:true,
     },
+    color:{
+        type:String,
+        default:"#000",
+    }
 
 });
 

@@ -44,52 +44,55 @@ const ExistingBudget = () => {
               expense.category?._id === category._id
           );
 
-          // Calculate the total spent amount for the current category
           const totalSpent = filteredExpenses.reduce(
             (sum, expense) => sum + expense.ExpenseAmount,
             0
           );
           let Remaining = category.Amount - totalSpent;
-          const isOverBudget = Remaining < 0; // Check if the budget is exceeded
+          const isOverBudget = Remaining < 0; 
           if (isOverBudget) {
-            Remaining = Math.abs(Remaining); // Convert to positive for display
+            Remaining = Math.abs(Remaining); 
           }
+          const colors = ["#36A2EB", "#FFCE56", "#9966FF", "#FF9F40",
+            "#FF6B6B", "#6BCB77", "#FFD93D", "#6A0572", "#1FAB89", "#DAA520","#FF6384"];
 
           return (
             <div
               key={index}
               className={`budget-card ${
                 category.Amount > 1000 ? "high-budget" : "low-budget"
-              } ${isOverBudget ? "over-budget" : ""}`} // Add a class for over-budget
+              } ${isOverBudget ? "over-budget" : ""}`} 
+              style={{borderColor:category.color}}
             >
               <div className="budget-header">
-                <span className="budget-name">{category.budgetName}</span>
-                <span className="budget-amount">
+                <span className="budget-name" style={{color:category.color}}>{category.budgetName}</span>
+                <span className="budget-amount" style={{color:category.color}}>
                   ${category.Amount} Budgeted
                 </span>
               </div>
 
-              <div className="custom-progress-bar">
+              <div className="custom-progress-bar" >
                 <div
                   className="custom-progress-fill"
                   style={{
                     width: `${Math.min(
                       (totalSpent / category.Amount) * 100,
                       100
-                    )}%`, // Cap at 100% for over-budget
-                    backgroundColor: isOverBudget ? "#ff000" : "#9cb380", // Red for over-budget, green otherwise
+                    )}%`, 
+                    backgroundColor: isOverBudget ? "#ff000" : "#9cb380", 
+                    color:category.color
                   }}
                 ></div>
               </div>
 
               <div className="budget-labels">
-                <span className="spent-amount">${totalSpent} Spent</span>
+                <span className="spent-amount" style={{color:category.color}}>${totalSpent} Spent</span>
                 {isOverBudget ? (
-                  <span className="remaining-amount over-budget-text">
+                  <span className="remaining-amount over-budget-text" style={{color:category.color}}>
                     Over Budget by ${Remaining}
                   </span>
                 ) : (
-                  <span className="remaining-amount">
+                  <span className="remaining-amount" style={{color:category.color}}>
                     ${Remaining} Remaining
                   </span>
                 )}
@@ -97,6 +100,7 @@ const ExistingBudget = () => {
               <Button
                 onClick={() => sendInfo(category, filteredExpenses)}
                 className="btn-view-details"
+                style={{backgroundColor:category.color}}
               >
                 View Details 💵
               </Button>

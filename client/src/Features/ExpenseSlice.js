@@ -5,6 +5,19 @@ const initialState = {
     expense:[],
 };
 
+export const deleteExpense = createAsyncThunk(
+    '/expenses/deleteExpense',
+    async(expenseId)=>{
+        try{
+            await axios.delete(`http://localhost:3001/deleteExpense/${expenseId}`);
+            return expenseId;
+        }catch(error){
+            console.error("Error deleting expense:", error);
+            alert("Failed to delete expense. Please try again.");
+        }
+    }
+);
+
 export const createExpense = createAsyncThunk('expenses/createExpense',
     async(expenseData)=>{
         try{
@@ -26,10 +39,10 @@ export const expenseSlice = createSlice({
     name:'expenses',
     initialState,
     reducers:{
-
         addExpense:(state, action)=>{
             state.expense.push(action.payload);
         },
+
     }
 });
 

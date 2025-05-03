@@ -1,20 +1,22 @@
-import { Table } from "reactstrap";
-import { useSelector } from "react-redux";
+import { Button, Table } from "reactstrap";
+import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { deleteExpense } from "../Features/ExpenseSlice";
 
 const RecentExpense = () => {
   const userId = useSelector((state) => state.users.user._id);
-  const [expenseList, setExpenseList] = useState([]);
+  const [expenseList, setExpenseList] = useState([]); // Local state for expenses
+  const dispatch = useDispatch();
 
+  // Fetch data when the component mounts or userId changes
   useEffect(() => {
     const fetchData = async () => {
       try {
         const responseExpense = await axios.get(
           `http://localhost:3001/expenseList?user=${userId}`
         );
-
-        setExpenseList(responseExpense.data);
+        setExpenseList(responseExpense.data); // Update local state with fetched data
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -22,6 +24,19 @@ const RecentExpense = () => {
 
     if (userId) fetchData();
   }, [userId]);
+
+  // Handle delete operation
+  const handleDelete = async (expenseId) => {
+    try {
+      await dispatch(deleteExpense(expenseId)).unwrap(); // Wait for the delete action to complete
+      setExpenseList((prevExpenses) =>
+        prevExpenses.filter((expense) => expense._id !== expenseId)
+      ); // Update local state to remove the deleted expense
+    } catch (error) {
+      console.error("Failed to delete expense:", error);
+    }
+  };
+
   return (
     <div>
       <h1>Recent Expense</h1>
@@ -34,7 +49,8 @@ const RecentExpense = () => {
                 <th>Name</th>
                 <th>Amount</th>
                 <th>Date</th>
-                <th>Budget</th>
+                <th>Budget Name</th>
+                <th>Edit</th>
               </tr>
             </thead>
             <tbody>
@@ -57,6 +73,16 @@ const RecentExpense = () => {
                       <td>${expense.ExpenseAmount}</td>
                       <td>{formattedDate}</td>
                       <td>{expense.category?.budgetName || "No Category"}</td>
+                      <td>
+                        <Button
+                          color="danger"
+                          size="sm"
+                          onClick={() => handleDelete(expense._id)}
+                        >
+                          Delete
+                        </Button>{" "}
+                        <Button size="sm">Edit</Button>
+                      </td>
                     </tr>
                   );
                 })}
@@ -69,4 +95,5 @@ const RecentExpense = () => {
     </div>
   );
 };
+
 export default RecentExpense;
