@@ -11,6 +11,7 @@ import { useEffect } from 'react';
 import { setUser } from './Features/UserSlice.js';
 import BudgetDetails from './Component/BudgetDetails.js';
 import Profile from './Component/Profile.js';
+import EditExpense from './Component/EditExpense.js';
 function App() {
   const dispatch = useDispatch();
 
@@ -34,6 +35,7 @@ function App() {
               <Route path='/login' element={<Login />}></Route>
               <Route path='/register' element={<Register />}></Route>
               <Route path='/BudgetDetails' element={<BudgetDetails />}></Route>
+              <Route path='/EditExpense' element={<EditExpense />}></Route>
               <Route path='/update/:user_email/:user_name/:user_password' element={<UpdateUser />}></Route>
             </Routes>
           </Row>

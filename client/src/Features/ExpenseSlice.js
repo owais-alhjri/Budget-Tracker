@@ -5,6 +5,26 @@ const initialState = {
     expense:[],
 };
 
+export const UpdateExpense = createAsyncThunk(
+    "expense/EditExpense",
+    async (expenseData) => {
+      try {
+        const { id, ...data } = expenseData; 
+        const response = await axios.put(
+          `http://localhost:3001/EditExpense/${id}`,
+          data 
+        );
+        const expense = response.data.expense;
+        alert("Expense Edited successfully");
+        return expense;
+        
+      } catch (error) {
+        console.error("Error updating expense:", error);
+        throw error;
+      }
+    }
+  );
+
 export const deleteExpense = createAsyncThunk(
     '/expenses/deleteExpense',
     async(expenseId)=>{

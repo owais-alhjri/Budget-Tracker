@@ -3,11 +3,13 @@ import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { deleteExpense } from "../Features/ExpenseSlice";
-
+import {useLocation, useNavigate } from "react-router-dom";
 const RecentExpense = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const userId = useSelector((state) => state.users.user._id);
   const [expenseList, setExpenseList] = useState([]); // Local state for expenses
-  const dispatch = useDispatch();
+
 
   // Fetch data when the component mounts or userId changes
   useEffect(() => {
@@ -81,7 +83,7 @@ const RecentExpense = () => {
                         >
                           Delete
                         </Button>{" "}
-                        <Button size="sm">Edit</Button>
+                        <Button size="sm" onClick={()=> navigate('/EditExpense',{ state: { expenseId: expense._id } })} >Edit</Button>
                       </td>
                     </tr>
                   );

@@ -155,44 +155,53 @@ const BudgetDetails = () => {
           <h3>Expenses</h3>
           {localExpenses.length > 0 ? (
             <>
-          <Table hover responsive striped className="text-center">
-          <thead>
-              <tr>
-                <th>Name</th>
-                <th>Amount</th>
-                <th>Date</th>
-                <th>Edit</th>
-              </tr>
-            </thead>
-            <tbody>
-
-          {localExpenses.map((expense) => {
-            let formattedDate = "Invalid Date";
-            if (expense.createdAt) {
-              const date = new Date(expense.createdAt);
-              if (!isNaN(date)) {
-                formattedDate = date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
-              }
-            }
-            return (
-              <tr key={expense._id}>
-                <td>{expense.ExpenseName}</td>
-                <td>${expense.ExpenseAmount}</td>
-                <td>{formattedDate}</td>
-                <td>
-                  <Button
-                    color="danger"
-                    size="sm"
-                    className="me-2"
-                    onClick={() => handleDelete(expense._id)}
-                  >
-                    delete
-                  </Button>
-                </td>
-              </tr>
-            );
-          })}
-                            </tbody>
+              <Table hover responsive striped className="text-center">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th>Edit</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {localExpenses.map((expense) => {
+                    let formattedDate = "Invalid Date";
+                    if (expense.createdAt) {
+                      const date = new Date(expense.createdAt);
+                      if (!isNaN(date)) {
+                        formattedDate = date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+                      }
+                    }
+                    return (
+                      <tr key={expense._id}>
+                        <td>{expense.ExpenseName}</td>
+                        <td>${expense.ExpenseAmount}</td>
+                        <td>{formattedDate}</td>
+                        <td>
+                          <Button
+                            color="danger"
+                            size="sm"
+                            className="me-2"
+                            onClick={() => handleDelete(expense._id)}
+                          >
+                            delete
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={() =>
+                              navigate("/EditExpense", {
+                                state: { expenseId: expense._id },
+                              })
+                            }
+                          >
+                            Edit
+                          </Button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
               </Table>
               <div
                 style={{ width: "100%", height: "400px", marginTop: "20px" }}

@@ -170,6 +170,33 @@ app.post('/createExpense', async (req, res) => {
 
     }
 });
+
+app.put('/EditExpense/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { ExpenseName, ExpenseAmount, category } = req.body;
+
+    if (!ExpenseName || !ExpenseAmount || !category) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const UpdateExpense = await ExpenseModel.findById(id);
+    if (!UpdateExpense) {
+      return res.status(404).json({ error: "Expense ID not found" });
+    }
+
+    UpdateExpense.ExpenseName = ExpenseName;
+    UpdateExpense.ExpenseAmount = ExpenseAmount;
+    UpdateExpense.category = category;
+
+    await UpdateExpense.save();
+    res.status(200).json({ msg: "Expense updated successfully", expense: UpdateExpense });
+  } catch (error) {
+    console.error("Error updating expense:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.put(
   "/updateUserProfile/:email/",
   upload.single("profilePic"), 
@@ -245,6 +272,7 @@ app.delete("/deleteBudget/:id",async(req, res)=>{
     res.status(500).send({ error: 'Failed to delete budget' });  }
 
 });
+
 
 app.listen(3001, () =>{
     console.log("You are connected");
