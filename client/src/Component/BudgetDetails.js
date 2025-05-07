@@ -1,30 +1,30 @@
 import { useEffect, useRef, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Chart } from "chart.js/auto";
-import { Button, Table } from "reactstrap";
-import { useDispatch } from "react-redux";
+import { Button } from "reactstrap";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
 import { deleteExpense } from "../Features/ExpenseSlice";
 import { deleteBudget } from "../Features/BudgetSlice";
+import deleteImg from "../images/delete.png";
+import editImg from "../images/edit.png";
 
 const BudgetDetails = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const { category, expenses = [] } = location.state || {};
+  const userId = useSelector((state) => state.users.user?._id || null);
+  const { category = {}, expenses = [] } = location.state || {};
+
   const [localExpenses, setLocalExpenses] = useState(expenses); // Local state
+  const [currentCategory, setCategory] = useState(category); // Reactive category state
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
 
-  const totalSpent = localExpenses.reduce(
-    (sum, expense) => sum + expense.ExpenseAmount,
-    0
-  );
+  console.log("Category data:", currentCategory);
+  console.log("User ID:", userId);
+  console.log("Local expenses:", localExpenses);
 
-  let Remaining = category.Amount - totalSpent;
-  const isOverBudget = Remaining < 0;
-  if (isOverBudget) {
-    Remaining = Math.abs(Remaining);
-  }
   const predefinedColors = useMemo(
     () => [
       "#36A2EB",
@@ -42,6 +42,49 @@ const BudgetDetails = () => {
     ],
     []
   );
+
+  useEffect(() => {
+    const fetchUpdatedExpenses = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3001/expenseList?user=${userId}`
+        );
+        const updatedExpenses = response.data.filter(
+          (expense) => expense.category?._id === currentCategory._id
+        );
+        setLocalExpenses(updatedExpenses); // Update the local state with the latest data
+      } catch (error) {
+        console.error("Error fetching updated expenses:", error);
+      }
+    };
+
+    if (location.state?.category?.refetch) {
+      fetchUpdatedExpenses();
+    }
+  }, [location.state, currentCategory, userId]);
+
+  useEffect(() => {
+    const fetchCategoryDetails = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3001/category/${currentCategory._id}`);
+        const updatedCategory = response.data;
+        console.log("Updated Category:", updatedCategory);
+        setCategory(updatedCategory); // Update the category state
+      } catch (error) {
+        console.error("Error fetching category details:", error);
+      }
+    };
+
+    if (location.state?.category?.refetch && currentCategory._id) {
+      fetchCategoryDetails();
+    }
+  }, [location.state, currentCategory._id]);
+
+  useEffect(() => {
+    if (location.state?.category?.refetch) {
+      navigate(location.pathname, { replace: true }); // Reset the state
+    }
+  }, [location.state, navigate]);
 
   useEffect(() => {
     if (!chartRef.current) return;
@@ -90,6 +133,21 @@ const BudgetDetails = () => {
     };
   }, [localExpenses, predefinedColors]); // Update dependency to localExpenses
 
+  if (!currentCategory || !userId) {
+    return <p>Error: Missing category or user information. Please try again.</p>;
+  }
+
+  const totalSpent = localExpenses.reduce(
+    (sum, expense) => sum + expense.ExpenseAmount,
+    0
+  );
+
+  let Remaining = currentCategory.Amount - totalSpent;
+  const isOverBudget = Remaining < 0;
+  if (isOverBudget) {
+    Remaining = Math.abs(Remaining);
+  }
+
   const handleDelete = (expenseId) => {
     dispatch(deleteExpense(expenseId));
     navigate("/");
@@ -103,122 +161,125 @@ const BudgetDetails = () => {
   return (
     <div className="Details-budgets-container">
       <h1>Budget Details</h1>
-      {category ? (
-        <div>
-          <div
-            className={`budget-card ${
-              category.Amount > 1000 ? "high-budget" : "low-budget"
-            } ${isOverBudget ? "over-budget" : ""}`}
-            style={{ borderColor: category.color }}
-          >
-            <div className="budget-header">
-              <span className="budget-name" style={{ color: category.color }}>
-                {category.budgetName}
+      <div>
+        <div
+          className={`budget-card ${
+            currentCategory.Amount > 1000 ? "high-budget" : "low-budget"
+          } ${isOverBudget ? "over-budget" : ""}`}
+          style={{ borderColor: currentCategory.color }}
+        >
+          <div className="budget-header">
+            <span className="budget-name" style={{ color: currentCategory.color }}>
+              {currentCategory.budgetName}
+            </span>
+            <span className="budget-amount" style={{ color: currentCategory.color }}>
+              ${currentCategory.Amount} Budgeted
+            </span>
+          </div>
+          <div className="custom-progress-bar">
+            <div
+              className="custom-progress-fill"
+              style={{
+                width: `${Math.min(
+                  (totalSpent / currentCategory.Amount) * 100,
+                  100
+                )}%`,
+                backgroundColor: isOverBudget ? "#ff0000" : "#9cb380",
+              }}
+            ></div>
+          </div>
+          <div className="budget-labels">
+            <span className="spent-amount" style={{ color: currentCategory.color }}>
+              ${totalSpent} Spent
+            </span>
+            {isOverBudget ? (
+              <span
+                className="remaining-amount over-budget-text"
+                style={{ color: currentCategory.color }}
+              >
+                Over Budget by ${Remaining}
               </span>
-              <span className="budget-amount" style={{ color: category.color }}>
-                ${category.Amount} Budgeted
+            ) : (
+              <span
+                className="remaining-amount"
+                style={{ color: currentCategory.color }}
+              >
+                ${Remaining} Remaining
               </span>
-            </div>
-            <div className="custom-progress-bar">
-              <div
-                className="custom-progress-fill"
-                style={{
-                  width: `${Math.min(
-                    (totalSpent / category.Amount) * 100,
-                    100
-                  )}%`,
-                  backgroundColor: isOverBudget ? "#ff0000" : "#9cb380",
-                }}
-              ></div>
-            </div>
-            <div className="budget-labels">
-              <span className="spent-amount" style={{ color: category.color }}>
-                ${totalSpent} Spent
-              </span>
-              {isOverBudget ? (
-                <span
-                  className="remaining-amount over-budget-text"
-                  style={{ color: category.color }}
-                >
-                  Over Budget by ${Remaining}
-                </span>
-              ) : (
-                <span
-                  className="remaining-amount"
-                  style={{ color: category.color }}
-                >
-                  ${Remaining} Remaining
-                </span>
-              )}
+            )}
+          </div>
+        </div>
+        <h3>Expenses</h3>
+        {localExpenses.length > 0 ? (
+          <div>
+            <table className="recent-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Amount</th>
+                  <th>Date</th>
+                  <th>Edit</th>
+                </tr>
+              </thead>
+              <tbody>
+                {localExpenses.map((expense) => {
+                  let formattedDate = "Invalid Date";
+                  if (expense.createdAt) {
+                    const date = new Date(expense.createdAt);
+                    if (!isNaN(date)) {
+                      formattedDate = date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+                    }
+                  }
+                  return (
+                    <tr key={expense._id}>
+                      <td>{expense.ExpenseName}</td>
+                      <td>${expense.ExpenseAmount}</td>
+                      <td>{formattedDate}</td>
+                      <td>
+                        <Button
+                          className="DeEdButton"
+                          size="sm"
+                          color="white"
+                          onClick={() => handleDelete(expense._id)}
+                        >
+                          <img width={30} src={deleteImg} alt="Delete"></img>
+                        </Button>
+                        <Button
+                          size="sm"
+                          color="white"
+                          className="DeEdButton"
+                          onClick={() =>
+                            navigate("/EditExpense", {
+                              state: { expenseId: expense._id, category: currentCategory }, // Pass updated category here
+                            })
+                          }
+                        >
+                          <img width={30} src={editImg} alt="Edit" />
+                        </Button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            <div
+              style={{ width: "100%", height: "400px", marginTop: "20px" }}
+            >
+              <canvas ref={chartRef}></canvas>
             </div>
           </div>
-          <h3>Expenses</h3>
-          {localExpenses.length > 0 ? (
-            <>
-              <Table hover responsive striped className="text-center">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Amount</th>
-                    <th>Date</th>
-                    <th>Edit</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {localExpenses.map((expense) => {
-                    let formattedDate = "Invalid Date";
-                    if (expense.createdAt) {
-                      const date = new Date(expense.createdAt);
-                      if (!isNaN(date)) {
-                        formattedDate = date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
-                      }
-                    }
-                    return (
-                      <tr key={expense._id}>
-                        <td>{expense.ExpenseName}</td>
-                        <td>${expense.ExpenseAmount}</td>
-                        <td>{formattedDate}</td>
-                        <td>
-                          <Button
-                            color="danger"
-                            size="sm"
-                            className="me-2"
-                            onClick={() => handleDelete(expense._id)}
-                          >
-                            delete
-                          </Button>
-                          <Button
-                            size="sm"
-                            onClick={() =>
-                              navigate("/EditExpense", {
-                                state: { expenseId: expense._id },
-                              })
-                            }
-                          >
-                            Edit
-                          </Button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </Table>
-              <div
-                style={{ width: "100%", height: "400px", marginTop: "20px" }}
-              >
-                <canvas ref={chartRef}></canvas>
-              </div>
-            </>
-          ) : (
-            <p>No expenses available for this budget.</p>
-          )}
-        </div>
-      ) : (
-        <p>No budget details available.</p>
-      )}
-      <Button color="danger" onClick={() => handleDeleteBudget(category._id)}>
-        Delete Budget
-      </Button>
+        ) : (
+          <p>No expenses available for this budget.</p>
+        )}
+      </div>
+      <div className="btn-create">
+        <button
+          className="button_red"
+          onClick={() => handleDeleteBudget(currentCategory._id)}
+        >
+          Delete Budget
+        </button>
+      </div>
     </div>
   );
 };

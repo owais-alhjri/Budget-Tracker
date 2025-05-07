@@ -5,14 +5,14 @@ import { Col, Container, Input, Row, Button } from "reactstrap";
 import { createExpense } from "../Features/ExpenseSlice.js";
 
 const Expense = () => {
-  const userId = useSelector((state) => state.users.user._id);
-  const dispatch = useDispatch();
+  const userId = useSelector((state) => state.users.user?._id || null);
+    const dispatch = useDispatch();
   const [categoryList, setCategoryList] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [expenseName, setExpenseName] = useState("");
   const [expenseAmount, setExpenseAmount] = useState(0);
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
     //e.preventDefault();
     const expense = {
       expenseName: expenseName,
@@ -91,7 +91,7 @@ const Expense = () => {
           </Row>
           <Row>
             <Col className="btn-create">
-              <Button>Add</Button>
+              <button className="button_blue">Add</button>
             </Col>
           </Row>
         </form>

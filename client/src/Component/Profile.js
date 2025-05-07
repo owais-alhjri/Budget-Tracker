@@ -20,7 +20,6 @@ const Profile = () => {
 
   const user = useSelector((state) => state.users.user);
 
-
   const [userName, setUserName] = useState(user.name);
   const [pwd, setPwd] = useState(user.password);
   const [confirmPassword, setConfirmPassword] = useState(user.password);
@@ -43,7 +42,9 @@ const Profile = () => {
     navigate("/profile");
   };
 
-
+ if (!user) {
+    return <p>Loading user information...</p>;
+  }
   
   return (
     <Container fluid>

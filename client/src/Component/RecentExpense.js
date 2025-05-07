@@ -3,12 +3,14 @@ import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { deleteExpense } from "../Features/ExpenseSlice";
-import {useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import deleteImg from '../images/delete.png';
+import editImg from '../images/edit.png';
 const RecentExpense = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const userId = useSelector((state) => state.users.user._id);
-  const [expenseList, setExpenseList] = useState([]); // Local state for expenses
+  const userId = useSelector((state) => state.users.user?._id || null);
+    const [expenseList, setExpenseList] = useState([]); // Local state for expenses
 
 
   // Fetch data when the component mounts or userId changes
@@ -34,6 +36,7 @@ const RecentExpense = () => {
       setExpenseList((prevExpenses) =>
         prevExpenses.filter((expense) => expense._id !== expenseId)
       ); // Update local state to remove the deleted expense
+      window.location.reload();
     } catch (error) {
       console.error("Failed to delete expense:", error);
     }
@@ -45,7 +48,7 @@ const RecentExpense = () => {
 
       <div className="expense-list">
         {expenseList.length > 0 ? (
-          <Table hover responsive striped className="text-center">
+          <table  className="recent-table">
             <thead>
               <tr>
                 <th>Name</th>
@@ -77,21 +80,22 @@ const RecentExpense = () => {
                       <td>{expense.category?.budgetName || "No Category"}</td>
                       <td>
                         <Button
-                          color="danger"
+                        className="DeEdButton"
                           size="sm"
+                          color="white" 
                           onClick={() => handleDelete(expense._id)}
                         >
-                          Delete
+                          <img width={30} src={deleteImg} alt="Delete"></img>
                         </Button>{" "}
-                        <Button size="sm" onClick={()=> navigate('/EditExpense',{ state: { expenseId: expense._id } })} >Edit</Button>
+                        <Button color="white" size="sm" className="DeEdButton" onClick={()=> navigate('/EditExpense',{ state: { expenseId: expense._id } })} ><img width={30} src={editImg} alt="Edit"></img></Button>
                       </td>
                     </tr>
                   );
                 })}
             </tbody>
-          </Table>
+          </table>
         ) : (
-          <p>No expenses for this category.</p>
+          <p>No expenses are available.</p>
         )}
       </div>
     </div>

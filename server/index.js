@@ -55,25 +55,33 @@ app.post("/registerUser", async (req, res)=>{
         res.status(500).json({error:"An error occurred"});
     }});
 
-app.post('/login', async (req,res)=>{
-    try{
-        const {email,password} = req.body;
-        const user = await UserModel.findOne({email:email});
-        if(!user){
-            return res.status(500).json({msg:"User not found"});
+    app.post('/login', async (req, res) => {
+      try {
+        const { email, password } = req.body;
+    
+        // Check if the user exists
+        const user = await UserModel.findOne({ email: email });
+        if (!user) {
+          return res.status(404).json({ msg: "User not found" });
         }
-        const passwordMatch = await bcrypt.compare(password,user.password);
-        if(!password){
-            return res.status(500).json({msg:"Authentication failed"})
+    
+        // Validate the password
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (!passwordMatch) {
+          return res.status(401).json({ msg: "Authentication failed" });
         }
-        res.status(200).json({user,msg:"Success"})
-    }catch(error){
-        res.status(500).json({error:error.msg});
-    }});
+    
+        // If authentication is successful, return the user
+        res.status(200).json({ user, msg: "Success" });
+      } catch (error) {
+        console.error("Error during login:", error);
+        res.status(500).json({ error: "An error occurred during login." });
+      }
+    });
 
-app.post('/logout', async(req, res)=>{
-   res.status(200).json({msg:"Logged out successfully"});
-});
+    app.post('/logout', async (req, res) => {
+      res.status(200).json({ msg: "Logged out successfully" });
+    });
 
 app.get('/userList', async (req, res)=>{
     try{
@@ -199,7 +207,7 @@ app.put('/EditExpense/:id', async (req, res) => {
 
 app.put(
   "/updateUserProfile/:email/",
-  upload.single("profilePic"), 
+  upload.single("profilePic"),
   async (req, res) => {
     const email = req.params.email;
     const name = req.body.name;
@@ -211,9 +219,10 @@ app.put(
       if (!userToUpdate) {
         return res.status(404).json({ error: "User not found" });
       }
+
       let profilePic = null;
       if (req.file) {
-        profilePic = req.file.filename; 
+        profilePic = req.file.filename;
         if (userToUpdate.profilePic) {
           const oldFilePath = path.join(
             __dirname,
@@ -227,19 +236,19 @@ app.put(
               console.log("Old file deleted successfully");
             }
           });
-          userToUpdate.profilePic = profilePic; 
+          userToUpdate.profilePic = profilePic;
         }
-      } else {
-        console.log("No file uploaded");
       }
 
       userToUpdate.name = name;
 
-      if (password !== userToUpdate.password) {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        userToUpdate.password = hashedPassword;
-      } else {
-        userToUpdate.password = password; 
+      if (password) {
+        const passwordMatch = await bcrypt.compare(password, userToUpdate.password);
+
+        if (!passwordMatch) {
+          const hashedPassword = await bcrypt.hash(password, 10);
+          userToUpdate.password = hashedPassword;
+        }
       }
 
       await userToUpdate.save();
@@ -250,7 +259,6 @@ app.put(
     }
   }
 );
-  
 app.delete('/deleteExpense/:id', async(req, res)=>{
   try{
     const {id} = req.params;

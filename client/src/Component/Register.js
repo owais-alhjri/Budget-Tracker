@@ -3,14 +3,12 @@ import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { deleteUser, registerUser } from "../Features/UserSlice";
 import { UserSchemaValidation } from "../Validation/UserValidation";
 import axios from "axios";
 
 const Register = () => {
   const dispatch = useDispatch();
-  //const userList = useSelector((state) => state.users.user);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -45,13 +43,13 @@ const Register = () => {
   const handleSubmit = (data) => {
     console.log("Data:", data);
     const userData = {
-      name: data.name,
-      email: data.email,
-      password: data.password,
-      confirmPassword: data.confirmPassword,
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        confirmPassword: data.confirmPassword,
     };
     dispatch(registerUser(userData));
-  };
+};
 
   const handleDelete = (email) => {
     dispatch(deleteUser(email));
@@ -117,45 +115,7 @@ const Register = () => {
         </Col>
         <Col className="columndiv2" lg="6"></Col>
       </Row>
-      <Row>
-        <Table bordered hover responsive className="text-center">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Password</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Array.isArray(usersListDB) &&
-              usersListDB.map((user) => (
-                <tr key={user.email}>
-                  <td>{user.name}</td>
-                  <td>{user.email}</td>
-                  <td>{user.password}</td>
-                  <td>
-                    <Button
-                      color="danger"
-                      size="sm"
-                      className="me-2"
-                      onClick={() => handleDelete(user.email)}
-                    >
-                      Delete
-                    </Button>
-                    <Link
-                      to={`/update/${user.email}/${user.name}/${user.password}`}
-                    >
-                      <Button color="warning" size="sm">
-                        Update
-                      </Button>
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </Table>
-      </Row>
+
       <Row></Row>
     </Container>
   );

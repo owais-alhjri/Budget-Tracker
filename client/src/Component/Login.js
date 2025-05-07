@@ -11,7 +11,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { login } from "../Features/UserSlice";
+import { login, resetState } from "../Features/UserSlice";
 
 const Login = () => {
   const [email,setEmail] = useState("");
@@ -19,23 +19,18 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const user = useSelector((state)=> state.users.user);
-  const isSuccess = useSelector((state)=> state.users.isSuccess);
+  const user = useSelector((state) => state.users.user || null);
+   const isSuccess = useSelector((state)=> state.users.isSuccess);
   const isError = useSelector((state)=> state.users.isError);
 
-  useEffect(()=>{
-    if(isError){
-      navigate('/login')
-
+  useEffect(() => {
+    if (isError) {
+      navigate('/login');
+    } else if (isSuccess && user) {
+      navigate('/');
+      dispatch(resetState()); // Reset the state after successful navigation
     }
-    if(isSuccess){
-      navigate('/')
-    }
-    else{
-      navigate('/login')
-    }
-  },[user,isError,isSuccess,navigate]);
-
+  }, [user, isError, isSuccess, navigate, dispatch]);
   const handleLogin = ()=>{
     const userData={
       email,

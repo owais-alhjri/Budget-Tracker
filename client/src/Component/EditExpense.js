@@ -8,15 +8,16 @@ import { UpdateExpense } from "../Features/ExpenseSlice";
 const EditExpense = () => {
   const location = useLocation();
   const dispatch = useDispatch();
-    const navigate = useNavigate();
-  
-  const { expenseId } = location.state || {};
+  const navigate = useNavigate();
+  const userId = useSelector((state) => state.users.user?._id || null);
+
   const [categoryList, setCategoryList] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [expenseName, setExpenseName] = useState("");
   const [expenseAmount, setExpenseAmount] = useState(0);
-  const userId = useSelector((state) => state.users.user._id);
-
+    const { expenseId, category } = location.state || {};
+    console.log("Navigating to BudgetDetails with category:", category);
+  console.log(expenseId);
   useEffect(() => {
     const fetchCategory = async () => {
       try {
@@ -57,7 +58,7 @@ const EditExpense = () => {
     if (expenseId) fetchExpenseDetails();
   }, [expenseId, userId]);
 
-  const handleUpdate = (event) => {
+  const handleUpdate = async (event) => {
     event.preventDefault();
   
     const expenseData = {
@@ -67,14 +68,21 @@ const EditExpense = () => {
       category: selectedCategory,
     };
   
-    dispatch(UpdateExpense(expenseData));
-    navigate(-1);
+    try {
+      await dispatch(UpdateExpense(expenseData)).unwrap(); // Wait for the update to complete
+      navigate("/BudgetDetails", { state: { category: { ...category, refetch: true } } });
+        } catch (error) {
+      console.error("Error updating expense:", error);
+    }
+  
+    setExpenseName("");
+    setExpenseAmount("");
+    setSelectedCategory("");
   };
 
   return (
     <div>
       <Container className="createBudget-container">
-
         <form onSubmit={handleUpdate}>
           <h3>Add New Expense</h3>
           <Row>
@@ -96,7 +104,7 @@ const EditExpense = () => {
                 name="Amount"
                 type="number"
                 placeholder="Amount"
-                value={expenseAmount}
+                value={expenseAmount || ""}
                 onChange={(e) => setExpenseAmount(e.target.value)}
               />
             </Col>

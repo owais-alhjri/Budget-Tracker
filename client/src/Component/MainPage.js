@@ -5,13 +5,13 @@ import ExistingBudget from "./ExistingBudget.js";
 import Expense from "./Expense.js";
 import RecentExpense from "./RecentExpense.js";
 const MainPage = () => {
-  const name = useSelector((state) => state.users.user.name);
+  const name = useSelector((state) => state.users.user?.name || "Guest");
   return (
     <div>
       <Container>
         <Row>
           <h1>
-            Welcome Back, <span style={{ color: "blue" }}>{name}</span>
+            Welcome, <span className="name">{name}</span>
           </h1>
         </Row>
 
@@ -23,14 +23,10 @@ const MainPage = () => {
           <Col md={6}>
             <Expense />
           </Col>
-
         </Row>
 
-        <Row >
-          <Col >
-          <ExistingBudget  />
-          </Col>
-          
+        <Row>
+            <ExistingBudget />
         </Row>
         <Row>
           <RecentExpense />

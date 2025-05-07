@@ -20,6 +20,7 @@ export const UpdateExpense = createAsyncThunk(
         
       } catch (error) {
         console.error("Error updating expense:", error);
+        alert(error);
         throw error;
       }
     }
@@ -30,6 +31,7 @@ export const deleteExpense = createAsyncThunk(
     async(expenseId)=>{
         try{
             await axios.delete(`http://localhost:3001/deleteExpense/${expenseId}`);
+            alert("The Expense has been deleted successfully");
             return expenseId;
         }catch(error){
             console.error("Error deleting expense:", error);
@@ -49,6 +51,7 @@ export const createExpense = createAsyncThunk('expenses/createExpense',
 
             });
             const expense = response.data.expense;
+            alert("expense has been created successfully");
             return expense;
         }catch(error){
             console.error("Error creating expense:", error);
