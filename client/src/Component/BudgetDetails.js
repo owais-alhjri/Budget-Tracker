@@ -105,6 +105,7 @@ const BudgetDetails = () => {
           {
             label: "Expense Amount",
             data: localExpenses.map((e) => e.ExpenseAmount),
+            
             backgroundColor: localExpenses.map(
               (_, i) => predefinedColors[i % predefinedColors.length] + "80"
             ), // 80 = ~50% opacity
@@ -118,9 +119,23 @@ const BudgetDetails = () => {
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: {
+              color: "#000000", 
+            },
+          },
+        },
         scales: {
+          x: {
+            ticks: {
+              color: "#000000",
+            },
+          },
           y: {
-            beginAtZero: true,
+            ticks: {
+              color: "#000000",
+            },
           },
         },
       },
@@ -160,7 +175,9 @@ const BudgetDetails = () => {
 
   return (
     <div className="Details-budgets-container">
+      
       <h1>Budget Details</h1>
+
       <div>
         <div
           className={`budget-card ${
@@ -209,6 +226,7 @@ const BudgetDetails = () => {
             )}
           </div>
         </div>
+
         <h3>Expenses</h3>
         {localExpenses.length > 0 ? (
           <div>

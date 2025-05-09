@@ -26,7 +26,7 @@ const Header = () => {
     <Navbar className="header">
       <div className="logo">
         <Link to="/" className="logo-link">
-        <img alt="budget Tracker" width={150} height={150} src={budgetTrackerImg} />
+        <img alt="budget Tracker" width={150} src={budgetTrackerImg} />
         </Link>
       </div>
       <Nav className="nav">
@@ -34,12 +34,12 @@ const Header = () => {
     <>
       <NavItem className="nav-item">
         <Link to="/profile">
-          <img alt="profile" width={150} height={150} src={profileImg} />
+          <img alt="profile" width={150} src={profileImg} />
         </Link>
       </NavItem>
       <NavItem className="nav-item">
         <Link to="/logout" onClick={handleLogout}>
-          <img alt="logout" width={150}  src={logoutImg} />
+          <img alt="logout" width={150}    src={logoutImg} />
         </Link>
       </NavItem>
     </>
@@ -47,12 +47,12 @@ const Header = () => {
     <>
       <NavItem className="nav-item">
         <Link to="/login">
-          <img alt="login" width={150} height={150} src={loginImg} />
+          <img alt="login" width={150}  src={loginImg} />
         </Link>
       </NavItem>
       <NavItem className="nav-item">
         <Link to="/register">
-          <img alt="registerImg" width={150} height={150} src={registerImg} />
+          <img alt="registerImg" width={150}  src={registerImg} />
         </Link>
       </NavItem>
     </>
