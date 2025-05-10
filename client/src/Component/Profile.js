@@ -27,20 +27,30 @@ const Profile = () => {
 
   const picURL = "http://localhost:3001/uploads/" + user.profilePic;
 
-  const handleUpdate = (event) => {
-    event.preventDefault();
-    const formData = new FormData();
-    formData.append("email", user.email);
-    formData.append("name", userName);
-    formData.append("password", pwd);
-    if (profilePic) {
-      formData.append("profilePic", profilePic);
-    }
-  
-    dispatch(updateUserProfile(formData));
+const handleUpdate = async (event) => {
+  event.preventDefault();
+  const formData = new FormData();
+  formData.append("email", user.email);
+  formData.append("name", userName);
+  formData.append("password", pwd);
+  if (profilePic) {
+    formData.append("profilePic", profilePic);
+  }
+console.log("Form Data:", {
+  email: user.email,
+  name: userName,
+  password: pwd,
+  profilePic,
+});
+  try {
+    await dispatch(updateUserProfile(formData)).unwrap(); // Wait for the action to complete
     alert("Profile Updated.");
     navigate("/profile");
-  };
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    alert("Failed to update profile. Please try again.");
+  }
+};
 
  if (!user) {
     return <p>Loading user information...</p>;

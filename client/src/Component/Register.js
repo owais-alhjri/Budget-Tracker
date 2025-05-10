@@ -6,9 +6,11 @@ import { useEffect, useState } from "react";
 import { deleteUser, registerUser } from "../Features/UserSlice";
 import { UserSchemaValidation } from "../Validation/UserValidation";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -49,11 +51,11 @@ const Register = () => {
         confirmPassword: data.confirmPassword,
     };
     dispatch(registerUser(userData));
+    navigate("/login");
+    
 };
 
-  const handleDelete = (email) => {
-    dispatch(deleteUser(email));
-  };
+
 
   return (
     <Container fluid>
