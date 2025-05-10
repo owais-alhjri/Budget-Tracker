@@ -1,11 +1,13 @@
-import { Button, Container, Row } from "reactstrap";
-import { useSelector } from "react-redux";
+import { Button, Row } from "reactstrap";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { setBudgetDetails } from "../Features/BudgetSlice";
 
 const ExistingBudget = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const userId = useSelector((state) => state.users.user?._id || null);
   const [categoryList, setCategoryList] = useState([]);
   const [expenseList, setExpenseList] = useState([]);
@@ -28,9 +30,15 @@ const ExistingBudget = () => {
     if (userId) fetchData();
   }, [userId]);
 
-  const sendInfo = (category, expenses) => {
-    navigate("/BudgetDetails", { state: { category, expenses } });
-  };
+const handelViewDetails = (category, expenses) => {
+  if (!category || !expenses) {
+    console.error("Category or expenses are missing:", { category, expenses });
+    return;
+  }
+    console.log("Dispatching category and expenses:", { category, expenses });
+  dispatch(setBudgetDetails({ category, expenses })); // Dispatch category and filtered expenses
+  navigate("/BudgetDetails");
+};
 
   return (
     <div className="existing-budgets-container">
@@ -116,11 +124,11 @@ const ExistingBudget = () => {
                   )}
                 </div>
                 <Button
-                  onClick={() => sendInfo(category, filteredExpenses)}
+                  onClick={() => handelViewDetails(category, filteredExpenses)} // Use filteredExpenses here
                   className="btn-view-details"
                   style={{ backgroundColor: category.color }}
                 >
-                  View Details 
+                  View Details
                 </Button>
               </div>
             );

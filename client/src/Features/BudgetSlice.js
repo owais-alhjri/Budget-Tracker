@@ -3,6 +3,8 @@ import axios from "axios";
 
 const initialState = {
     budget:[],
+    category:null,
+    expenses:[],
 };
 
 export const deleteBudget = createAsyncThunk(
@@ -50,7 +52,15 @@ export const budgetSlice = createSlice({
         addExpense:(state, action)=>{
             state.budget.push(action.payload);
         },
+        setBudgetDetails:(state, action)=>{
+            state.category = action.payload.category;
+            state.expenses = action.payload.expenses;
+        },
+        clearBudgetDetails:(state, action)=>{
+            state.category = null;
+            state.expenses = [];
+        },
     }
 });
-export const {addExpense,addBudget} = budgetSlice.actions;
+export const {addExpense,addBudget, setBudgetDetails,clearBudgetDetails} = budgetSlice.actions;
 export default budgetSlice.reducer;

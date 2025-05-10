@@ -14,16 +14,16 @@ const BudgetDetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const userId = useSelector((state) => state.users.user?._id || null);
-  const { category = {}, expenses = [] } = location.state || {};
+  const category = useSelector((state)=>state.budgets.category);
+  const expenses = useSelector((state)=>state.budgets.expenses);
 
   const [localExpenses, setLocalExpenses] = useState(expenses); // Local state
   const [currentCategory, setCategory] = useState(category); // Reactive category state
+
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
 
-  console.log("Category data:", currentCategory);
-  console.log("User ID:", userId);
-  console.log("Local expenses:", localExpenses);
+
 
   const predefinedColors = useMemo(
     () => [
@@ -148,6 +148,17 @@ const BudgetDetails = () => {
     };
   }, [localExpenses, predefinedColors]); // Update dependency to localExpenses
 
+
+  useEffect(() => {
+    if (!category) {
+      console.error("Category is missing. Redirecting to ExistingBudget...");
+      navigate("/ExistingBudget");
+    }
+  }, [category, navigate]);
+
+  if (!category) {
+    return <p>Loading...</p>;
+  }
   if (!currentCategory || !userId) {
     return <p>Error: Missing category or user information. Please try again.</p>;
   }
@@ -172,7 +183,13 @@ const BudgetDetails = () => {
     dispatch(deleteBudget(budgetId));
     navigate("/");
   };
+if (!category) {
+    console.error("Category is missing in Redux state.");
+    return <p>Error: No category data available. Please try again.</p>;
+  }
 
+  console.log("Category:", category);
+  console.log("Expenses:", expenses);
   return (
     <div className="Details-budgets-container">
       
