@@ -4,8 +4,8 @@ import { Chart } from "chart.js/auto";
 import { Button } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import { deleteExpense } from "../Features/ExpenseSlice";
-import { deleteBudget } from "../Features/BudgetSlice";
+import { deleteExpense, setExpenseId } from "../Features/ExpenseSlice";
+import { deleteBudget, setBudgetDetails } from "../Features/BudgetSlice";
 import deleteImg from "../images/delete.png";
 import editImg from "../images/edit.png";
 
@@ -22,6 +22,7 @@ const BudgetDetails = () => {
 
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
+  //console.log("Redux state in BudgetDetails:", { category, expenses });
 
 
 
@@ -43,26 +44,27 @@ const BudgetDetails = () => {
     []
   );
 
-  useEffect(() => {
-    const fetchUpdatedExpenses = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:3001/expenseList?user=${userId}`
-        );
-        const updatedExpenses = response.data.filter(
-          (expense) => expense.category?._id === currentCategory._id
-        );
-        setLocalExpenses(updatedExpenses); // Update the local state with the latest data
-      } catch (error) {
-        console.error("Error fetching updated expenses:", error);
-      }
-    };
-
-    if (location.state?.category?.refetch) {
-      fetchUpdatedExpenses();
+useEffect(() => {
+  const fetchUpdatedExpenses = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3001/expenseList?user=${userId}`
+      );
+      const updatedExpenses = response.data.filter(
+        (expense) => expense.category?._id === currentCategory._id
+      );
+      setLocalExpenses(updatedExpenses); // Update the local state with the latest data
+      dispatch(setBudgetDetails({ category: currentCategory, expenses: updatedExpenses })); // Update Redux state
+    } catch (error) {
+      console.error("Error fetching updated expenses:", error);
     }
-  }, [location.state, currentCategory, userId]);
+  };
 
+  if (location.state?.refetch) {
+    fetchUpdatedExpenses();
+    navigate(location.pathname, { replace: true }); // Reset the state to avoid repeated refetching
+  }
+}, [location.state, currentCategory, userId, navigate, dispatch]);
   useEffect(() => {
     const fetchCategoryDetails = async () => {
       try {
@@ -174,15 +176,33 @@ const BudgetDetails = () => {
     Remaining = Math.abs(Remaining);
   }
 
-  const handleDelete = (expenseId) => {
-    dispatch(deleteExpense(expenseId));
-    navigate("/");
+  const handleDelete = async (expenseId) => {
+    try {
+      await dispatch(deleteExpense(expenseId)).unwrap(); // Delete from the database
+      setLocalExpenses((prevExpenses) =>
+        prevExpenses.filter((expense) => expense._id !== expenseId)
+      ); // Update local state
+    } catch (error) {
+      console.error("Failed to delete expense:", error);
+    }
   };
 
-  const handleDeleteBudget = (budgetId) => {
-    dispatch(deleteBudget(budgetId));
-    navigate("/");
-  };
+const handleEdit = (expenseId) => {
+  dispatch(setExpenseId(expenseId)); // Save the expenseId in Redux
+  console.log("Dispatched Expense ID:", expenseId); // Debug log
+  navigate("/EditExpense"); // Navigate to EditExpense
+};
+
+const handleDeleteBudget = async (budgetId) => {
+  try {
+    await dispatch(deleteBudget(budgetId)).unwrap(); // Dispatch the deleteBudget action
+    alert("Budget and associated expenses deleted successfully");
+    navigate("/"); // Navigate back to the main page
+  } catch (error) {
+    console.error("Error deleting budget and associated expenses:", error);
+    alert("Failed to delete budget and associated expenses. Please try again.");
+  }
+};
 if (!category) {
     console.error("Category is missing in Redux state.");
     return <p>Error: No category data available. Please try again.</p>;
@@ -283,11 +303,7 @@ if (!category) {
                           size="sm"
                           color="white"
                           className="DeEdButton"
-                          onClick={() =>
-                            navigate("/EditExpense", {
-                              state: { expenseId: expense._id, category: currentCategory }, // Pass updated category here
-                            })
-                          }
+                          onClick={() => handleEdit(expense._id)}
                         >
                           <img width={30} src={editImg} alt="Edit" />
                         </Button>

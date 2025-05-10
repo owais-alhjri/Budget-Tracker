@@ -270,17 +270,28 @@ app.delete('/deleteExpense/:id', async(req, res)=>{
 }
 });
 
-app.delete("/deleteBudget/:id",async(req, res)=>{
-  try{
-      const {id} = req.params;
-      await BudgetModel.findByIdAndDelete(id);
-      res.status(200).json({message:"Budget deleted successfully"});
-  }catch(error){
-    console.error("Error deleting budget:", error);
-    res.status(500).send({ error: 'Failed to delete budget' });  }
+app.delete("/deleteBudget/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
 
+    // Check if the budget exists
+    const budget = await BudgetModel.findById(id);
+    if (!budget) {
+      return res.status(404).json({ error: "Budget not found" });
+    }
+
+    // Delete all expenses associated with this budget
+    await ExpenseModel.deleteMany({ category: id });
+
+    // Delete the budget
+    await BudgetModel.findByIdAndDelete(id);
+
+    res.status(200).json({ message: "Budget and associated expenses deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting budget and expenses:", error);
+    res.status(500).send({ error: "Failed to delete budget and associated expenses" });
+  }
 });
-
 
 app.listen(3001, () =>{
     console.log("You are connected");

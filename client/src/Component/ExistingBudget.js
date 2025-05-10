@@ -35,7 +35,6 @@ const handelViewDetails = (category, expenses) => {
     console.error("Category or expenses are missing:", { category, expenses });
     return;
   }
-    console.log("Dispatching category and expenses:", { category, expenses });
   dispatch(setBudgetDetails({ category, expenses })); // Dispatch category and filtered expenses
   navigate("/BudgetDetails");
 };

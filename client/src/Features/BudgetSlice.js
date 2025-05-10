@@ -8,18 +8,18 @@ const initialState = {
 };
 
 export const deleteBudget = createAsyncThunk(
-    '/budgets/deleteBudget',
-    async(budgetId)=>{
-        try{
-            await axios.delete(`http://localhost:3001/deleteBudget/${budgetId}`);
-            alert("The budget has been deleted successfully");
-            return budgetId;
-        }catch(error){
-            console.error("Error deleting budget:", error);
-            alert("Failed to delete the budget. Please try again.");
-            
-        }
+  "/budgets/deleteBudget",
+  async (budgetId, { dispatch }) => {
+    try {
+      await axios.delete(`http://localhost:3001/deleteBudget/${budgetId}`);
+      alert("The budget and its associated expenses have been deleted successfully");
+      return budgetId;
+    } catch (error) {
+      console.error("Error deleting budget and expenses:", error);
+      alert("Failed to delete the budget and its associated expenses. Please try again.");
+      throw error;
     }
+  }
 );
 
 export const createBudget = createAsyncThunk('budgets/createBudget',

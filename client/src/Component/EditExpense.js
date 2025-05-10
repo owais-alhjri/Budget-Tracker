@@ -1,23 +1,25 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Col, Container, Input, Row, Button } from "reactstrap";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { UpdateExpense } from "../Features/ExpenseSlice";
+import axios from "axios";
 
 const EditExpense = () => {
-  const location = useLocation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const userId = useSelector((state) => state.users.user?._id || null);
+    const userId = useSelector((state) => state.users.user?._id || null);
 
-  const [categoryList, setCategoryList] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const expenses = useSelector((state) => state.budgets.expenses); // Get expenses from Redux
+  const selectedExpenseId = useSelector((state) => state.expenses.selectedExpenseId); // Get selected expense ID from Redux
+  console.log("Selected Expense ID:", selectedExpenseId);
   const [expenseName, setExpenseName] = useState("");
   const [expenseAmount, setExpenseAmount] = useState(0);
-    const { expenseId, category } = location.state || {};
-    console.log("Navigating to BudgetDetails with category:", category);
-  console.log(expenseId);
+  const [selectedCategory, setSelectedCategory] = useState("");
+    const [categoryList, setCategoryList] = useState([]);
+
+  //console.log("Redux state in EditExpense:", { selectedExpenseId, expenses });
+
   useEffect(() => {
     const fetchCategory = async () => {
       try {
@@ -33,58 +35,44 @@ const EditExpense = () => {
     if (userId) fetchCategory();
   }, [userId]);
 
-  useEffect(() => {
-    const fetchExpenseDetails = async () => {
-      if (!userId) {
-        console.error("User ID is undefined");
-        return;
-      }
+useEffect(() => {
+  // Find the expense to edit from Redux
+  const expenseToEdit = expenses.find((exp) => exp._id === selectedExpenseId);
+  if (expenseToEdit) {
+    setExpenseName(expenseToEdit.ExpenseName);
+    setExpenseAmount(expenseToEdit.ExpenseAmount);
+    setSelectedCategory(expenseToEdit.category?._id || "");
+  }
+}, [selectedExpenseId, expenses]); // Add `expenses` as a dependency to refetch data
 
-      try {
-        const response = await axios.get(
-          `http://localhost:3001/expenseList?user=${userId}`
-        );
-        const expense = response.data.find((exp) => exp._id === expenseId);
-        if (expense) {
-          setExpenseName(expense.ExpenseName);
-          setExpenseAmount(expense.ExpenseAmount);
-          setSelectedCategory(expense.category?._id || "");
-        }
-      } catch (error) {
-        console.error("Error fetching expense details:", error);
-      }
-    };
+const handleUpdate = async (event) => {
+  event.preventDefault();
 
-    if (expenseId) fetchExpenseDetails();
-  }, [expenseId, userId]);
-
-  const handleUpdate = async (event) => {
-    event.preventDefault();
-  
-    const expenseData = {
-      id: expenseId,
-      ExpenseName: expenseName,
-      ExpenseAmount: expenseAmount,
-      category: selectedCategory,
-    };
-  
-    try {
-      await dispatch(UpdateExpense(expenseData)).unwrap(); // Wait for the update to complete
-      navigate("/BudgetDetails", { state: { category: { ...category, refetch: true } } });
-        } catch (error) {
-      console.error("Error updating expense:", error);
-    }
-  
-    setExpenseName("");
-    setExpenseAmount("");
-    setSelectedCategory("");
+  const expenseData = {
+    id: selectedExpenseId,
+    ExpenseName: expenseName,
+    ExpenseAmount: expenseAmount,
+    category: selectedCategory,
   };
 
+  try {
+    await dispatch(UpdateExpense(expenseData)).unwrap(); // Update in the database
+    navigate("/BudgetDetails", { state: { refetch: true } }); // Pass a refetch flag to BudgetDetails
+  } catch (error) {
+    console.error("Error updating expense:", error);
+  }
+};
+useEffect(() => {
+  if (!selectedExpenseId) {
+    console.error("Selected Expense ID is missing. Redirecting to BudgetDetails...");
+    navigate("/BudgetDetails");
+  }
+}, [selectedExpenseId, navigate]);
   return (
     <div>
       <Container className="createBudget-container">
         <form onSubmit={handleUpdate}>
-          <h3>Add New Expense</h3>
+          <h3>Edit Expense</h3>
           <Row>
             <Col>
               <p>Expense Name</p>
@@ -140,4 +128,5 @@ const EditExpense = () => {
     </div>
   );
 };
+
 export default EditExpense;

@@ -7,6 +7,6 @@ export const Store = configureStore({
     reducer:{
         users:usersReducer,
         budgets: budgetSlice.reducer, 
-        expense:expenseSlice.reducer,
+        expenses:expenseSlice.reducer,
     },
 });
