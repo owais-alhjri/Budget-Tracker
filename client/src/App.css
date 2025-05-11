@@ -449,3 +449,176 @@ select.form-control {
 .recent-table img {
   vertical-align: middle; /* Align images with text */
 }
+
+
+/* Login Page Styles */
+.login-container {
+  margin-top: 50px;
+  padding: 20px;
+  background-color: var(--secondary-color); /* Light gray background */
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+.login-image {
+  max-width: 80%; /* Reduce image size for better balance */
+  height: auto;
+  margin: 0 auto;
+  border-radius: var(--border-radius); /* Add rounded corners */
+  box-shadow: var(--box-shadow); /* Add subtle shadow */
+}
+
+.login-form-container {
+  background-color: #ffffff; /* White background for the form */
+  padding: 30px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+.login-form-container h2 {
+  font-size: 2rem;
+  color: var(--primary-color); /* Vibrant green */
+  font-weight: bold;
+}
+
+.login-form-container p {
+  font-size: 1rem;
+  color: var(--text-color); /* Neutral text color */
+}
+
+.login-button {
+  background-color: var(--primary-color); /* Vibrant green */
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: var(--border-radius);
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.login-button:hover {
+  background-color: var(--accent-color); /* Warm orange on hover */
+  transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+.signup-link {
+  color: var(--primary-color); /* Vibrant green */
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.signup-link:hover {
+  color: var(--accent-color); /* Warm orange on hover */
+  text-decoration: underline;
+}
+
+/* Register Page Styles */
+.register-container {
+  margin-top: 50px;
+  padding: 20px;
+  background-color: var(--secondary-color); /* Light gray background */
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+.register-image {
+  max-width: 80%; /* Reduce image size for better balance */
+  height: auto;
+  margin: 0 auto;
+  border-radius: var(--border-radius); /* Add rounded corners */
+  box-shadow: var(--box-shadow); /* Add subtle shadow */
+}
+
+.register-form-container {
+  background-color: #ffffff; /* White background for the form */
+  padding: 30px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+.register-form-container h2 {
+  font-size: 2rem;
+  color: var(--primary-color); /* Vibrant green */
+  font-weight: bold;
+}
+
+.register-form-container p {
+  font-size: 1rem;
+  color: var(--text-color); /* Neutral text color */
+}
+
+.register-button {
+  background-color: var(--primary-color); /* Vibrant green */
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: var(--border-radius);
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.register-button:hover {
+  background-color: var(--accent-color); /* Warm orange on hover */
+  transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+.login-link {
+  color: var(--primary-color); /* Vibrant green */
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.login-link:hover {
+  color: var(--accent-color); /* Warm orange on hover */
+  text-decoration: underline;
+}
+
+.error {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
+
+
+/* Profile Page Styles */
+.profile-container {
+  margin-top: 50px;
+  padding: 20px;
+  background-color: var(--secondary-color); /* Light gray background */
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+.profile-image {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%; /* Circular image */
+  object-fit: cover; /* Ensure the image fits within the circle */
+  box-shadow: var(--box-shadow); /* Add a subtle shadow */
+}
+
+.profile-container h2 {
+  font-size: 2rem;
+  color: var(--primary-color); /* Vibrant green */
+  font-weight: bold;
+}
+
+.profile-container p {
+  font-size: 1rem;
+  color: var(--text-color); /* Neutral text color */
+}
+
+.profile-button {
+  background-color: var(--primary-color); /* Vibrant green */
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: var(--border-radius);
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.profile-button:hover {
+  background-color: var(--accent-color); /* Warm orange on hover */
+  transform: scale(1.05); /* Slightly enlarge on hover */
+}

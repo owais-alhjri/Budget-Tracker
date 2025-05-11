@@ -12,43 +12,54 @@ import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { login, resetState } from "../Features/UserSlice";
+import login_page from "../images/login_page.png";
 
 const Login = () => {
-  const [email,setEmail] = useState("");
-  const [password,setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const user = useSelector((state) => state.users.user || null);
-   const isSuccess = useSelector((state)=> state.users.isSuccess);
-  const isError = useSelector((state)=> state.users.isError);
+  const isSuccess = useSelector((state) => state.users.isSuccess);
+  const isError = useSelector((state) => state.users.isError);
 
   useEffect(() => {
     if (isError) {
-      navigate('/login');
+      navigate("/login");
     } else if (isSuccess && user) {
-      navigate('/');
+      navigate("/");
       dispatch(resetState()); // Reset the state after successful navigation
     }
   }, [user, isError, isSuccess, navigate, dispatch]);
-  const handleLogin = ()=>{
-    const userData={
+
+  const handleLogin = () => {
+    const userData = {
       email,
       password,
     };
     dispatch(login(userData));
-  }
+  };
+
   return (
     <div>
-<Container>
-        <Form>
-          <Row>
-            <Col md={3}>
-              <h1>Logo</h1>
-            </Col>
-          </Row>
-          <Row>
-            <Col md={3}>
+    <Container className="login-container">
+      <Row className="align-items-center">
+        {/* Left Side: Image */}
+        <Col md={6} className="text-center">
+          <img
+            alt="login"
+            src={login_page}
+            className="login-image"
+          />
+        </Col>
+
+        {/* Right Side: Login Form */}
+        <Col md={6}>
+          <div className="login-form-container">
+            <h2 className="text-center mb-4">Welcome Back</h2>
+            <p className="text-center mb-4">Log in to your account</p>
+            <Form>
               <FormGroup>
                 <Label for="email">Email</Label>
                 <Input
@@ -56,13 +67,10 @@ const Login = () => {
                   name="email"
                   placeholder="Enter email..."
                   type="email"
-                  onChange={(e)=> setEmail(e.target.value)}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </FormGroup>
-            </Col>
-          </Row>
-          <Row>
-            <Col md={3}>
               <FormGroup>
                 <Label for="password">Password</Label>
                 <Input
@@ -70,22 +78,25 @@ const Login = () => {
                   name="password"
                   placeholder="Enter password..."
                   type="password"
-                  onChange={(e)=>setPassword(e.target.value)}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
               </FormGroup>
-            </Col>
-          </Row>
-          <Row>
-            <Col md={3}>
-              <Button onClick={handleLogin}> Login </Button>
-            </Col>
-          </Row>
-        </Form>
-        <p>
-          No Account? <Link to="/register">Sign Up now.</Link>
-        </p>
-      </Container>
+              <div className="text-center">
+                <Button color="primary" onClick={handleLogin} className="w-100 login-button">
+                  Login
+                </Button>
+              </div>
+            </Form>
+            <p className="text-center mt-3">
+              No Account? <Link to="/register" className="signup-link">Sign Up now.</Link>
+            </p>
+          </div>
+        </Col>
+      </Row>
+    </Container>
     </div>
   );
 };
+
 export default Login;

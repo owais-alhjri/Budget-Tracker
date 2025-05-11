@@ -204,7 +204,6 @@ app.put('/EditExpense/:id', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-
 app.put(
   "/updateUserProfile/:email/",
   upload.single("profilePic"),
@@ -242,14 +241,12 @@ app.put(
 
       userToUpdate.name = name;
 
-      if (password) {
-        const passwordMatch = await bcrypt.compare(password, userToUpdate.password);
-
-        if (!passwordMatch) {
+        if (password !== userToUpdate.password) {
           const hashedPassword = await bcrypt.hash(password, 10);
           userToUpdate.password = hashedPassword;
+        } else {
+          userToUpdate.password = password; 
         }
-      }
 
       await userToUpdate.save();
 

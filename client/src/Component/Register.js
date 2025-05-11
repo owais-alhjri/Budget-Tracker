@@ -7,6 +7,7 @@ import { deleteUser, registerUser } from "../Features/UserSlice";
 import { UserSchemaValidation } from "../Validation/UserValidation";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import login_page from "../images/login_page.png";
 
 const Register = () => {
   const dispatch = useDispatch();
@@ -45,25 +46,28 @@ const Register = () => {
   const handleSubmit = (data) => {
     console.log("Data:", data);
     const userData = {
-        name: data.name,
-        email: data.email,
-        password: data.password,
-        confirmPassword: data.confirmPassword,
+      name: data.name,
+      email: data.email,
+      password: data.password,
+      confirmPassword: data.confirmPassword,
     };
     dispatch(registerUser(userData));
     navigate("/login");
-    
-};
-
-
+  };
 
   return (
-    <Container fluid>
-      <Row className="formrow">
-        <Col className="columndiv1" lg="6">
-          {/* Execute first the submitForm function and if validation is good execute the handleSubmit function */}
+    <Container className="register-container">
+      <Row className="align-items-center">
+        <Col md={6} className="text-center">
+          <img alt="register" src={login_page} className="register-image" />
+        </Col>
+        <Col md={6}>
           <form className="div-form" onSubmit={submitForm(onSubmit)}>
-            <div className="appTitle"></div>
+            <div className="register-form-container">
+            <h2 className="text-center mb-4">Create an Account</h2>
+            <p className="text-center mb-4">
+              Sign up to start tracking your budget
+            </p>
             <section className="form">
               <div className="form-group">
                 <input
@@ -104,18 +108,23 @@ const Register = () => {
                   className="form-control"
                   id="confirmPassword"
                   placeholder="Confirm your password..."
-                  onChange={(e) => setConfirmPassword(e.target.value)}
                   {...register("confirmPassword")}
                 />
                 <p className="error">{errors.confirmPassword?.message}</p>
               </div>
-              <Button color="primary" className="button">
+              <Button color="primary" className="w-100 register-button">
                 Register
               </Button>
             </section>
+            </div>
           </form>
+          <p className="text-center mt-3">
+            Already have an account?{" "}
+            <a href="/login" className="login-link">
+              Log in here.
+            </a>
+          </p>
         </Col>
-        <Col className="columndiv2" lg="6"></Col>
       </Row>
 
       <Row></Row>

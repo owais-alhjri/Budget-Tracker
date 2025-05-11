@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import deleteImg from "../images/delete.png";
 import editImg from "../images/edit.png";
 import { setBudgetDetails } from "../Features/BudgetSlice";
-
+import moment from "moment";
 const RecentExpense = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -76,20 +76,13 @@ const RecentExpense = () => {
                 .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort by createdAt in descending order
                 .slice(0, 5) // Get the last 5 added expenses
                 .map((expense) => {
-                  // Safely format the createdAt date
-                  let formattedDate = "Invalid Date";
-                  if (expense.createdAt) {
-                    const date = new Date(expense.createdAt);
-                    if (!isNaN(date)) {
-                      formattedDate = date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
-                    }
-                  }
+              
 
                   return (
                     <tr key={expense._id}>
                       <td>{expense.ExpenseName}</td>
                       <td>${expense.ExpenseAmount}</td>
-                      <td>{formattedDate}</td>
+                      <td>{moment(expense.createdAt).fromNow()}</td>
                       <td>{expense.category?.budgetName || "No Category"}</td>
                       <td>
                         <Button

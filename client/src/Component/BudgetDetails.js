@@ -8,6 +8,7 @@ import { deleteExpense, setExpenseId } from "../Features/ExpenseSlice";
 import { deleteBudget, setBudgetDetails } from "../Features/BudgetSlice";
 import deleteImg from "../images/delete.png";
 import editImg from "../images/edit.png";
+import moment from "moment";
 
 const BudgetDetails = () => {
   const dispatch = useDispatch();
@@ -278,18 +279,12 @@ if (!category) {
               </thead>
               <tbody>
                 {localExpenses.map((expense) => {
-                  let formattedDate = "Invalid Date";
-                  if (expense.createdAt) {
-                    const date = new Date(expense.createdAt);
-                    if (!isNaN(date)) {
-                      formattedDate = date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
-                    }
-                  }
+
                   return (
                     <tr key={expense._id}>
                       <td>{expense.ExpenseName}</td>
                       <td>${expense.ExpenseAmount}</td>
-                      <td>{formattedDate}</td>
+                      <td>{moment(expense.createdAt).fromNow()}</td>
                       <td>
                         <Button
                           className="DeEdButton"
