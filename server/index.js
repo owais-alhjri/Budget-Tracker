@@ -10,7 +10,8 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
-
+import dotenv from "dotenv";
+dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -20,7 +21,6 @@ const connectString = "mongodb+srv://owais:owais@users.lqkcx1u.mongodb.net/?retr
 mongoose.connect(connectString)
     .then(() => console.log("Connected to MongoDB"))
     .catch((error) => console.error("Error connecting to MongoDB:", error));
-    
 const storage = multer.diskStorage({
     destination:(req,file,cd) =>{
         cd(null,"uploads/");
