@@ -44,50 +44,82 @@ const BudgetDetails = () => {
     ],
     []
   );
+const [categoryList, setCategoryList] = useState([]);
 
+// Add this useEffect to fetch category list
 useEffect(() => {
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3001/categoryList?user=${userId}`
+      );
+      setCategoryList(response.data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
+  if (userId) {
+    fetchCategories();
+  }
+}, [userId]);
+useEffect(() => {
+  // If we receive a categoryId in the state, set it as the current category
+  if (location.state?.categoryId && categoryList) {
+    const categoryFromId = categoryList.find(cat => cat._id === location.state.categoryId);
+    if (categoryFromId) {
+      setCategory(categoryFromId);
+      dispatch(setBudgetDetails({ category: categoryFromId, expenses: [] }));
+    }
+  }
+
+  // Only proceed if we have a valid category
+  if (!currentCategory || !currentCategory._id) {
+    console.error("Category is missing or invalid.");
+    return;
+  }
+
   const fetchUpdatedExpenses = async () => {
     try {
       const response = await axios.get(
         `http://localhost:3001/expenseList?user=${userId}`
       );
+      
+      // Filter expenses for the current category
       const updatedExpenses = response.data.filter(
         (expense) => expense.category?._id === currentCategory._id
       );
-      setLocalExpenses(updatedExpenses); // Update the local state with the latest data
-      dispatch(setBudgetDetails({ category: currentCategory, expenses: updatedExpenses })); // Update Redux state
+      
+      setLocalExpenses(updatedExpenses); // Update the local state
+      
+      // Also fetch the full category details to ensure we have all data
+      const categoryResponse = await axios.get(
+        `http://localhost:3001/categoryList?user=${userId}`
+      );
+      
+      const fullCategory = categoryResponse.data.find(
+        cat => cat._id === currentCategory._id
+      );
+      
+      if (fullCategory) {
+        setCategory(fullCategory);
+        dispatch(
+          setBudgetDetails({
+            category: fullCategory,
+            expenses: updatedExpenses,
+          })
+        );
+      }
     } catch (error) {
-      console.error("Error fetching updated expenses:", error);
+      console.error("Error fetching updated data:", error);
     }
   };
 
   if (location.state?.refetch) {
     fetchUpdatedExpenses();
-    navigate(location.pathname, { replace: true }); // Reset the state to avoid repeated refetching
+    navigate(location.pathname, { replace: true }); // Reset the state
   }
 }, [location.state, currentCategory, userId, navigate, dispatch]);
-  useEffect(() => {
-    const fetchCategoryDetails = async () => {
-      try {
-        const response = await axios.get(`http://localhost:3001/category/${currentCategory._id}`);
-        const updatedCategory = response.data;
-        console.log("Updated Category:", updatedCategory);
-        setCategory(updatedCategory); // Update the category state
-      } catch (error) {
-        console.error("Error fetching category details:", error);
-      }
-    };
-
-    if (location.state?.category?.refetch && currentCategory._id) {
-      fetchCategoryDetails();
-    }
-  }, [location.state, currentCategory._id]);
-
-  useEffect(() => {
-    if (location.state?.category?.refetch) {
-      navigate(location.pathname, { replace: true }); // Reset the state
-    }
-  }, [location.state, navigate]);
 
   useEffect(() => {
     if (!chartRef.current) return;
@@ -177,6 +209,7 @@ useEffect(() => {
     Remaining = Math.abs(Remaining);
   }
 
+
   const handleDelete = async (expenseId) => {
     try {
       await dispatch(deleteExpense(expenseId)).unwrap(); // Delete from the database
@@ -188,29 +221,21 @@ useEffect(() => {
     }
   };
 
-const handleEdit = (expenseId) => {
-  dispatch(setExpenseId(expenseId)); // Save the expenseId in Redux
-  console.log("Dispatched Expense ID:", expenseId); // Debug log
-  navigate("/EditExpense"); // Navigate to EditExpense
-};
+  const handleEdit = (expenseId) => {
+    dispatch(setExpenseId(expenseId)); // Save the expenseId in Redux
+    navigate("/EditExpense"); // Navigate to EditExpense
+  };
 
-const handleDeleteBudget = async (budgetId) => {
-  try {
-    await dispatch(deleteBudget(budgetId)).unwrap(); // Dispatch the deleteBudget action
-    alert("Budget and associated expenses deleted successfully");
-    navigate("/"); // Navigate back to the main page
-  } catch (error) {
-    console.error("Error deleting budget and associated expenses:", error);
-    alert("Failed to delete budget and associated expenses. Please try again.");
-  }
-};
-if (!category) {
-    console.error("Category is missing in Redux state.");
-    return <p>Error: No category data available. Please try again.</p>;
-  }
-
-  console.log("Category:", category);
-  console.log("Expenses:", expenses);
+  const handleDeleteBudget = async (budgetId) => {
+    try {
+      await dispatch(deleteBudget(budgetId)).unwrap(); // Dispatch the deleteBudget action
+      alert("Budget and associated expenses deleted successfully");
+      navigate("/"); // Navigate back to the main page
+    } catch (error) {
+      console.error("Error deleting budget and associated expenses:", error);
+      alert("Failed to delete budget and associated expenses. Please try again.");
+    }
+  };
   return (
     <div className="Details-budgets-container">
       

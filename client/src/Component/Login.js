@@ -4,7 +4,6 @@ import {
   FormGroup,
   Label,
   Container,
-  Button,
   Col,
   Row,
 } from "reactstrap";
@@ -33,7 +32,8 @@ const Login = () => {
     }
   }, [user, isError, isSuccess, navigate, dispatch]);
 
-  const handleLogin = () => {
+  const handleLogin = (e) => {
+    e.preventDefault(); // Prevent default form submission
     const userData = {
       email,
       password,
@@ -43,58 +43,56 @@ const Login = () => {
 
   return (
     <div>
-    <Container className="login-container">
-      <Row className="align-items-center">
-        {/* Left Side: Image */}
-        <Col md={6} className="text-center">
-          <img
-            alt="login"
-            src={login_page}
-            className="login-image"
-          />
-        </Col>
+      <Container className="login-container">
+        <Row className="align-items-center">
+          {/* Left Side: Image */}
+          <Col md={6} className="text-center">
+            <img
+              alt="login"
+              src={login_page}
+              className="login-image"
+            />
+          </Col>
 
-        {/* Right Side: Login Form */}
-        <Col md={6}>
-          <div className="login-form-container">
-            <h2 className="text-center mb-4">Welcome Back</h2>
-            <p className="text-center mb-4">Log in to your account</p>
-            <Form>
-              <FormGroup>
-                <Label for="email">Email</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  placeholder="Enter email..."
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </FormGroup>
-              <FormGroup>
-                <Label for="password">Password</Label>
-                <Input
-                  id="password"
-                  name="password"
-                  placeholder="Enter password..."
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </FormGroup>
-              <div className="text-center">
-                <Button color="primary" onClick={handleLogin} className="w-100 login-button">
-                  Login
-                </Button>
-              </div>
-            </Form>
-            <p className="text-center mt-3">
-              No Account? <Link to="/register" className="signup-link">Sign Up now.</Link>
-            </p>
-          </div>
-        </Col>
-      </Row>
-    </Container>
+          {/* Right Side: Login Form */}
+          <Col md={6}>
+            <div className="login-form-container">
+              <h2 className="text-center mb-4">Welcome Back</h2>
+              <p className="text-center mb-4">Log in to your account</p>
+              <Form onSubmit={handleLogin}>
+                <FormGroup>
+                  <Label for="email">Email</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    placeholder="Enter email..."
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label for="password">Password</Label>
+                  <Input
+                    id="password"
+                    name="password"
+                    placeholder="Enter password..."
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </FormGroup>
+                <div className="btn-create">
+                  <button type="submit" className="button_blue">Login</button>
+                </div>
+              </Form>
+              <p className="text-center mt-3">
+                No Account? <Link to="/register" className="signup-link">Sign Up now.</Link>
+              </p>
+            </div>
+          </Col>
+        </Row>
+      </Container>
     </div>
   );
 };

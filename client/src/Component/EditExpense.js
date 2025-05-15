@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { UpdateExpense } from "../Features/ExpenseSlice";
 import axios from "axios";
+import { setBudgetDetails } from "../Features/BudgetSlice"; // Add this import
 
 const EditExpense = () => {
   const dispatch = useDispatch();
@@ -41,9 +42,12 @@ useEffect(() => {
   if (expenseToEdit) {
     setExpenseName(expenseToEdit.ExpenseName);
     setExpenseAmount(expenseToEdit.ExpenseAmount);
-    setSelectedCategory(expenseToEdit.category?._id || "");
+    setSelectedCategory(expenseToEdit.category?._id || ""); // Use the category ID
+  } else {
+    console.error("Expense not found. Redirecting to BudgetDetails...");
+    navigate("/BudgetDetails", { state: { refetch: true } });
   }
-}, [selectedExpenseId, expenses]); // Add `expenses` as a dependency to refetch data
+}, [selectedExpenseId, expenses, navigate]);// Add `expenses` as a dependency to refetch data
 
 const handleUpdate = async (event) => {
   event.preventDefault();
@@ -57,7 +61,29 @@ const handleUpdate = async (event) => {
 
   try {
     await dispatch(UpdateExpense(expenseData)).unwrap(); // Update in the database
-    navigate("/BudgetDetails", { state: { refetch: true } }); // Pass a refetch flag to BudgetDetails
+    
+    // Find the expense category object based on selectedCategory ID
+    const categoryObj = categoryList.find(cat => cat._id === selectedCategory);
+    
+    // Make sure we have the category before navigating
+    if (categoryObj) {
+      // Dispatch updated budget details before navigation
+      dispatch(setBudgetDetails({
+        category: categoryObj,
+        expenses: [] // This will be fetched again in BudgetDetails
+      }));
+      
+      // Navigate with the category ID in the state
+      navigate("/BudgetDetails", { 
+        state: { 
+          refetch: true, 
+          categoryId: selectedCategory 
+        }
+      });
+    } else {
+      console.error("Category not found");
+      navigate("/"); // Fallback to home if category not found
+    }
   } catch (error) {
     console.error("Error updating expense:", error);
   }
@@ -65,9 +91,12 @@ const handleUpdate = async (event) => {
 useEffect(() => {
   if (!selectedExpenseId) {
     console.error("Selected Expense ID is missing. Redirecting to BudgetDetails...");
-    navigate("/BudgetDetails");
+    navigate("/BudgetDetails", { state: { refetch: true } });
   }
 }, [selectedExpenseId, navigate]);
+console.log("Selected Expense ID:", selectedExpenseId);
+console.log("Expenses in Redux:", expenses);
+console.log("Category List:", categoryList);
   return (
     <div>
       <Container className="createBudget-container">

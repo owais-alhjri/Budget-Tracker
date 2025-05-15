@@ -11,12 +11,12 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import dotenv from "dotenv";
-dotenv.config();
+dotenv.config({ path: "../.env" });
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-const connectString = "mongodb+srv://owais:owais@users.lqkcx1u.mongodb.net/?retryWrites=true&w=majority&appName=users";
+const connectString = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_CLUSTER}/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 
 mongoose.connect(connectString)
     .then(() => console.log("Connected to MongoDB"))
@@ -36,7 +36,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 app.use("/uploads", express.static(__dirname + "/uploads"));
-
+const uploadsDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 app.post("/registerUser", async (req, res)=>{
     try{
         const name = req.body.name;
@@ -47,6 +50,7 @@ app.post("/registerUser", async (req, res)=>{
             name:name,
             email:email,
             password:hashedPassword,
+            profilePic: 'user.png',
         });
         await user.save();
         res.send({user:user,msg:"Added."});
@@ -93,43 +97,35 @@ app.get('/userList', async (req, res)=>{
     }
 });
 
-app.get('/categoryList', async(req, res)=>{
-    try{
-        const { user } = req.query;
-        if (!mongoose.Types.ObjectId.isValid(user)) {
-            return res.status(400).json({ error: "Invalid user ID" });
-        }
-        const categoryList = await BudgetModel.find({user})
-        .populate("user","name email");
-        res.status(200).json(categoryList);
-    }catch(error){
-        console.error("Error fetching category list:", error);
-        res.status(500).json({error:"AN error occurred while fetching Category"});
-
+app.get('/categoryList', async(req, res) => {
+  try {
+    const { user } = req.query;
+    if (!mongoose.Types.ObjectId.isValid(user)) {
+      return res.status(400).json({ error: "Invalid user ID" });
     }
+    const categoryList = await BudgetModel.find({user})
+      .populate("user", "name email");
+    res.status(200).json(categoryList);
+  } catch(error) {
+    console.error("Error fetching category list:", error);
+    res.status(500).json({error: "An error occurred while fetching Category"});
+  }
 });
 app.get('/expenseList', async (req, res) => {
-    try {
-      const { user } = req.query;
-  
-      if (!mongoose.Types.ObjectId.isValid(user)) {
-        return res.status(400).json({ error: "Invalid user ID" });
-      }
-  
-      // Fetch expenses and populate the category field to include budgetName
-      const expenseList = await ExpenseModel.find({ user })
-        .populate({
-          path: "category", // Populate the category field
-          select: "budgetName", // Only fetch the budgetName field
-        })
-        .populate("user", "name email"); // Optionally populate user details
-  
-      res.status(200).json(expenseList);
-    } catch (error) {
-      console.error("Error fetching expense list:", error);
-      res.status(500).json({ error: "An error occurred while fetching expenses." });
+  try {
+    const { user } = req.query;
+    if (!mongoose.Types.ObjectId.isValid(user)) {
+      return res.status(400).json({ error: "Invalid user ID" });
     }
-  });
+    const expenseList = await ExpenseModel.find({ user })
+      .populate({ path: "category", select: "budgetName" }) // Populate the category field
+      .populate("user", "name email");
+    res.status(200).json(expenseList);
+  } catch (error) {
+    console.error("Error fetching expense list:", error);
+    res.status(500).json({ error: "An error occurred while fetching expenses." });
+  }
+});
 
 app.post('/createBudget', async(req, res)=>{
     try{
@@ -219,38 +215,48 @@ app.put(
         return res.status(404).json({ error: "User not found" });
       }
 
-      let profilePic = null;
+      // Update name
+      userToUpdate.name = name;
+
+      // Handle profile picture update
       if (req.file) {
-        profilePic = req.file.filename;
-        if (userToUpdate.profilePic) {
+        // A new profile picture was uploaded
+        const profilePic = req.file.filename;
+        
+        // If there's an existing profile pic that's not the default, delete it
+        if (userToUpdate.profilePic && userToUpdate.profilePic !== 'user.png') {
           const oldFilePath = path.join(
             __dirname,
             "uploads",
             userToUpdate.profilePic
           );
-          fs.unlink(oldFilePath, (err) => {
-            if (err) {
-              console.error("Error deleting file:", err);
-            } else {
-              console.log("Old file deleted successfully");
-            }
-          });
-          userToUpdate.profilePic = profilePic;
+          
+          // Try to delete the old file (don't block the operation if it fails)
+          try {
+            fs.unlinkSync(oldFilePath);
+            console.log("Old file deleted successfully");
+          } catch (err) {
+            console.error("Error deleting file:", err);
+            // Continue with the update even if file deletion fails
+          }
         }
+        
+        // Set the new profile picture
+        userToUpdate.profilePic = profilePic;
       }
 
-      userToUpdate.name = name;
+      // Always hash the password for security
+      const hashedPassword = await bcrypt.hash(password, 10);
+      userToUpdate.password = hashedPassword;
 
-        if (password !== userToUpdate.password) {
-          const hashedPassword = await bcrypt.hash(password, 10);
-          userToUpdate.password = hashedPassword;
-        } else {
-          userToUpdate.password = password; 
-        }
-
+      // Save the updated user
       await userToUpdate.save();
 
-      res.send({ user: userToUpdate, msg: "Updated." });
+      // Return the updated user data
+      res.status(200).json({ 
+        user: userToUpdate, 
+        msg: "Profile updated successfully" 
+      });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }

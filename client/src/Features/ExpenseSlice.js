@@ -81,7 +81,13 @@ export const expenseSlice = createSlice({
       if (index !== -1) {
         state.expense[index] = updatedExpense; // Update the expense in the Redux state
       }
-    });
+    })
+    .addCase(deleteExpense.fulfilled, (state, action) => {
+        const deletedExpenseId = action.payload;
+        state.expense = state.expense.filter(
+          (expense) => expense._id !== deletedExpenseId
+        );
+      });
   },
 });
 

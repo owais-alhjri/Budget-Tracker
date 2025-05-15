@@ -1,12 +1,25 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
+// Load user data from localStorage on startup
 const initialState = {
-  user: null,
+  user: JSON.parse(localStorage.getItem("user")) || null,
   isLoading: false,
   isSuccess: false,
   isError: false,
 };
+
+export const initializeUserFromStorage = createAsyncThunk(
+  "users/initializeFromStorage",
+  async () => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      return JSON.parse(storedUser);
+    }
+    return null;
+  }
+);
+
 export const updateUserProfile = createAsyncThunk(
   "user/updateUserProfile",
   async (userData) => {
@@ -22,7 +35,6 @@ export const updateUserProfile = createAsyncThunk(
       );
 
       const user = response.data.user;
-      alert("The Profile has been updated successfully");
       return user;
     } catch (error) {
       console.log(error);
@@ -32,11 +44,13 @@ export const updateUserProfile = createAsyncThunk(
   }
 );
 
+// Your other thunks remain the same
 export const logout = createAsyncThunk("users/logout", async () => {
   try {
     const response = await axios.post("http://localhost:3001/logout");
     console.log(response);
     alert("You are logged out");
+    localStorage.removeItem("user");
     return true; // Return a success flag
   } catch (error) {
     console.log(error);
@@ -60,6 +74,7 @@ export const login = createAsyncThunk("users/login", async (userData) => {
     throw new Error(errorMessage);
   }
 });
+
 export const registerUser = createAsyncThunk(
   "users/registerUser",
   async (userData) => {
@@ -83,6 +98,7 @@ export const userSlice = createSlice({
   name: "users",
   initialState,
   reducers: {
+    // Your other reducers remain the same
     addUser: (state, action) => {
       state.user.push(action.payload);
     },
@@ -103,6 +119,11 @@ export const userSlice = createSlice({
     },
     setUser: (state, action) => {
       state.user = action.payload;
+      if (action.payload) {
+        localStorage.setItem("user", JSON.stringify(action.payload));
+      } else {
+        localStorage.removeItem("user");
+      }
     },
     resetState: (state) => {
       state.isSuccess = false;
@@ -111,6 +132,11 @@ export const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(initializeUserFromStorage.fulfilled, (state, action) => {
+        if (action.payload) {
+          state.user = action.payload;
+        }
+      })
       .addCase(login.pending, (state) => {
         state.isLoading = true;
       })
@@ -118,7 +144,6 @@ export const userSlice = createSlice({
         state.user = action.payload || null;
         state.isLoading = false;
         state.isSuccess = true;
-
         localStorage.setItem("user", JSON.stringify(action.payload));
       })
       .addCase(login.rejected, (state) => {
@@ -132,7 +157,11 @@ export const userSlice = createSlice({
         localStorage.removeItem("user"); // Clear the user data from localStorage
       })
       .addCase(updateUserProfile.fulfilled, (state, action) => {
-        state.user = action.payload; // Update the user in the Redux state
+        state.user = action.payload;
+        state.isLoading = false;
+        state.isSuccess = true;
+        // This is the important part - update localStorage with the new user data
+        localStorage.setItem("user", JSON.stringify(action.payload));
       })
       .addCase(updateUserProfile.rejected, (state, action) => {
         console.error("Failed to update profile:", action.error.message);

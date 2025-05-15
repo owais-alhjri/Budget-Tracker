@@ -8,6 +8,7 @@ import deleteImg from "../images/delete.png";
 import editImg from "../images/edit.png";
 import { setBudgetDetails } from "../Features/BudgetSlice";
 import moment from "moment";
+import { setExpenseId } from "../Features/ExpenseSlice";
 const RecentExpense = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -42,18 +43,23 @@ const RecentExpense = () => {
       console.error("Failed to delete expense:", error);
     }
   };
-  const handleEdit = (expense) => {
-    const category = expense.category; // Get the category from the expense
-    const expenses = [expense]; // Pass the single expense as the list of expenses
 
-    if (!category) {
-      console.error("Category is missing for the selected expense.");
-      return;
-    }
+const handleEdit = (expense) => {
+  const category = expense.category; // Get the category from the expense
+  const expenses = [expense]; // Pass the single expense as the list of expenses
 
-    dispatch(setBudgetDetails({ category, expenses })); // Set the category and expenses in Redux
-    navigate("/EditExpense"); // Navigate to EditExpense
-  };
+  if (!category) {
+    console.error("Category is missing for the selected expense.");
+    return;
+  }
+
+  console.log("Expense being edited:", expense);
+  console.log("Category being passed:", expense.category);
+
+  dispatch(setExpenseId(expense._id)); // Set the selectedExpenseId in Redux
+  dispatch(setBudgetDetails({ category, expenses })); // Set the category and expenses in Redux
+  navigate("/EditExpense"); // Navigate to EditExpense
+};
 
   return (
     <div>
