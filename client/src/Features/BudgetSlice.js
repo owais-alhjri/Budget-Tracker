@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
 const initialState = {
     budget:[],
@@ -11,7 +12,7 @@ export const deleteBudget = createAsyncThunk(
   "/budgets/deleteBudget",
   async (budgetId, { dispatch }) => {
     try {
-      await axios.delete(`http://localhost:3001/deleteBudget/${budgetId}`);
+      await axios.delete(`${API_URL}/deleteBudget/${budgetId}`);
       alert("The budget and its associated expenses have been deleted successfully");
       return budgetId;
     } catch (error) {
@@ -25,7 +26,7 @@ export const deleteBudget = createAsyncThunk(
 export const createBudget = createAsyncThunk('budgets/createBudget',
     async(budgetData)=>{
         try{
-            const response = await axios.post("http://localhost:3001/createBudget",{
+            const response = await axios.post(`${API_URL}/createBudget`,{
                 budgetName:budgetData.budgetName,
                 Amount:budgetData.Amount,
                 user:budgetData.user,

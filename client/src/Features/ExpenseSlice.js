@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
 const initialState = {
   expense: [],
@@ -12,7 +13,7 @@ export const UpdateExpense = createAsyncThunk(
     try {
       const { id, ...data } = expenseData;
       const response = await axios.put(
-        `http://localhost:3001/EditExpense/${id}`,
+        `${API_URL}/EditExpense/${id}`,
         data
       );
       const updatedExpense = response.data.expense;
@@ -30,7 +31,7 @@ export const deleteExpense = createAsyncThunk(
   "/expenses/deleteExpense",
   async (expenseId) => {
     try {
-      await axios.delete(`http://localhost:3001/deleteExpense/${expenseId}`);
+      await axios.delete(`${API_URL}/deleteExpense/${expenseId}`);
       alert("The expense has been deleted successfully");
       return expenseId;
     } catch (error) {
@@ -45,7 +46,7 @@ export const createExpense = createAsyncThunk(
   "expenses/createExpense",
   async (expenseData) => {
     try {
-      const response = await axios.post("http://localhost:3001/createExpense", {
+      const response = await axios.post(`${API_URL}/createExpense`, {
         ExpenseName: expenseData.expenseName,
         ExpenseAmount: expenseData.expenseAmount,
         category: expenseData.Category,

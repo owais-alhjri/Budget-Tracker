@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
 // Load user data from localStorage on startup
 const initialState = {
@@ -25,7 +26,7 @@ export const updateUserProfile = createAsyncThunk(
   async (userData) => {
     try {
       const response = await axios.put(
-        `http://localhost:3001/updateUserProfile/${userData.get("email")}`,
+        `${API_URL}/updateUserProfile/${userData.get("email")}`,
         userData,
         {
           headers: {
@@ -47,7 +48,7 @@ export const updateUserProfile = createAsyncThunk(
 // Your other thunks remain the same
 export const logout = createAsyncThunk("users/logout", async () => {
   try {
-    const response = await axios.post("http://localhost:3001/logout");
+    const response = await axios.post(`${API_URL}/logout`);
     console.log(response);
     alert("You are logged out");
     localStorage.removeItem("user");
@@ -59,7 +60,7 @@ export const logout = createAsyncThunk("users/logout", async () => {
   }
 });
 
-export const login = createAsyncThunk("users/login", async (userData) => {
+export const login = createAsyncThunk(`${API_URL}/login`, async (userData) => {
   try {
     const response = await axios.post("http://localhost:3001/login", {
       email: userData.email,
@@ -79,7 +80,7 @@ export const registerUser = createAsyncThunk(
   "users/registerUser",
   async (userData) => {
     try {
-      const response = await axios.post("http://localhost:3001/registerUser", {
+      const response = await axios.post(`${API_URL}/registerUser`, {
         name: userData.name,
         email: userData.email,
         password: userData.password,
