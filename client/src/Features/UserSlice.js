@@ -62,7 +62,7 @@ export const logout = createAsyncThunk("users/logout", async () => {
 
 export const login = createAsyncThunk(`${API_URL}/login`, async (userData) => {
   try {
-    const response = await axios.post("http://localhost:3001/login", {
+    const response = await axios.post(`${API_URL}/login`, {
       email: userData.email,
       password: userData.password,
     });

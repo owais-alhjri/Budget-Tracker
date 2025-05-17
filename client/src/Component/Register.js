@@ -17,11 +17,12 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [usersListDB, setUsersListDB] = useState([]);
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:3001/userList");
+        const response = await axios.get(`${API_URL}/userList`);
         setUsersListDB(response.data);
       } catch (error) {
         console.error("Error fetching user list:", error);

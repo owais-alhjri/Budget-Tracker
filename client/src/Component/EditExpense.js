@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { UpdateExpense } from "../Features/ExpenseSlice";
 import axios from "axios";
 import { setBudgetDetails } from "../Features/BudgetSlice"; // Add this import
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
 const EditExpense = () => {
   const dispatch = useDispatch();
@@ -25,7 +26,7 @@ const EditExpense = () => {
     const fetchCategory = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3001/categoryList?user=${userId}`
+          `${API_URL}/categoryList?user=${userId}`
         );
         setCategoryList(response.data);
       } catch (error) {

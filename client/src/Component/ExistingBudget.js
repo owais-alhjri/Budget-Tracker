@@ -11,13 +11,14 @@ const ExistingBudget = () => {
   const userId = useSelector((state) => state.users.user?._id || null);
   const [categoryList, setCategoryList] = useState([]);
   const [expenseList, setExpenseList] = useState([]);
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [responseCategory, responseExpense] = await Promise.all([
-          axios.get(`http://localhost:3001/categoryList?user=${userId}`),
-          axios.get(`http://localhost:3001/expenseList?user=${userId}`),
+          axios.get(`${API_URL}/categoryList?user=${userId}`),
+          axios.get(`${API_URL}/expenseList?user=${userId}`),
         ]);
 
         setCategoryList(responseCategory.data);

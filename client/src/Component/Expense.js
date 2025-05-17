@@ -11,6 +11,7 @@ const Expense = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [expenseName, setExpenseName] = useState("");
   const [expenseAmount, setExpenseAmount] = useState(0);
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
   const handleSubmit = (e) => {
     //e.preventDefault();
@@ -26,7 +27,7 @@ const Expense = () => {
   useEffect(() => {
     const fetchCategory = async () => {
         try {
-            const response = await axios.get(`http://localhost:3001/categoryList?user=${userId}`);
+            const response = await axios.get(`${API_URL}/categoryList?user=${userId}`);
             setCategoryList(response.data);
         } catch (error) {
             console.error("Error fetching category list:", error);

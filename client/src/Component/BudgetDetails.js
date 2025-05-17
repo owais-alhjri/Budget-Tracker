@@ -24,6 +24,7 @@ const BudgetDetails = () => {
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
   //console.log("Redux state in BudgetDetails:", { category, expenses });
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
 
 
@@ -51,7 +52,7 @@ useEffect(() => {
   const fetchCategories = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3001/categoryList?user=${userId}`
+        `${API_URL}/categoryList?user=${userId}`
       );
       setCategoryList(response.data);
     } catch (error) {
@@ -82,7 +83,7 @@ useEffect(() => {
   const fetchUpdatedExpenses = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3001/expenseList?user=${userId}`
+        `${API_URL}/expenseList?user=${userId}`
       );
       
       // Filter expenses for the current category
@@ -94,7 +95,7 @@ useEffect(() => {
       
       // Also fetch the full category details to ensure we have all data
       const categoryResponse = await axios.get(
-        `http://localhost:3001/categoryList?user=${userId}`
+        `${API_URL}/categoryList?user=${userId}`
       );
       
       const fullCategory = categoryResponse.data.find(

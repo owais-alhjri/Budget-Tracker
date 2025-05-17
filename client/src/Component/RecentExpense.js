@@ -14,13 +14,14 @@ const RecentExpense = () => {
   const navigate = useNavigate();
   const userId = useSelector((state) => state.users.user?._id || null);
   const [expenseList, setExpenseList] = useState([]); // Local state for expenses
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
   // Fetch data when the component mounts or userId changes
   useEffect(() => {
     const fetchData = async () => {
       try {
         const responseExpense = await axios.get(
-          `http://localhost:3001/expenseList?user=${userId}`
+          `${API_URL}/expenseList?user=${userId}`
         );
         setExpenseList(responseExpense.data); // Update local state with fetched data
       } catch (error) {

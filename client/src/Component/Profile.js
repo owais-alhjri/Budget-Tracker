@@ -17,6 +17,7 @@ import { useNavigate } from "react-router-dom";
 const Profile = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
   const user = useSelector((state) => state.users.user);
   const [loading, setLoading] = useState(true);
@@ -111,8 +112,8 @@ const Profile = () => {
 const picURL = user?.profilePic 
   ? (previewPic.startsWith("data:") 
     ? previewPic 
-    : `http://localhost:3001/uploads/${user.profilePic}`)
-  : "http://localhost:3001/uploads/user.png";
+    : `${API_URL}/uploads/${user.profilePic}`)
+  : `${API_URL}/uploads/user.png`;
   return (
     <div>
       <Container className="profile-container">
@@ -127,7 +128,7 @@ const picURL = user?.profilePic
               alt={userName} 
               onError={(e) => {
                 e.target.onerror = null; 
-                e.target.src = "http://localhost:3001/uploads/user.png";
+                e.target.src = `${API_URL}/uploads/user.png`;
               }}
             />
             <h3 className="mt-3">{user?.name}</h3>
