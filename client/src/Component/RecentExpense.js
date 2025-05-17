@@ -13,17 +13,16 @@ const RecentExpense = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const userId = useSelector((state) => state.users.user?._id || null);
-  const [expenseList, setExpenseList] = useState([]); // Local state for expenses
+  const [expenseList, setExpenseList] = useState([]); 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
-  // Fetch data when the component mounts or userId changes
   useEffect(() => {
     const fetchData = async () => {
       try {
         const responseExpense = await axios.get(
           `${API_URL}/expenseList?user=${userId}`
         );
-        setExpenseList(responseExpense.data); // Update local state with fetched data
+        setExpenseList(responseExpense.data); 
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -32,13 +31,12 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
     if (userId) fetchData();
   }, [userId]);
 
-  // Handle delete operation
   const handleDelete = async (expenseId) => {
     try {
-      await dispatch(deleteExpense(expenseId)).unwrap(); // Wait for the delete action to complete
+      await dispatch(deleteExpense(expenseId)).unwrap(); 
       setExpenseList((prevExpenses) =>
         prevExpenses.filter((expense) => expense._id !== expenseId)
-      ); // Update local state to remove the deleted expense
+      ); 
       window.location.reload();
     } catch (error) {
       console.error("Failed to delete expense:", error);
@@ -46,8 +44,8 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
   };
 
 const handleEdit = (expense) => {
-  const category = expense.category; // Get the category from the expense
-  const expenses = [expense]; // Pass the single expense as the list of expenses
+  const category = expense.category; 
+  const expenses = [expense]; 
 
   if (!category) {
     console.error("Category is missing for the selected expense.");
@@ -57,9 +55,9 @@ const handleEdit = (expense) => {
   console.log("Expense being edited:", expense);
   console.log("Category being passed:", expense.category);
 
-  dispatch(setExpenseId(expense._id)); // Set the selectedExpenseId in Redux
-  dispatch(setBudgetDetails({ category, expenses })); // Set the category and expenses in Redux
-  navigate("/EditExpense"); // Navigate to EditExpense
+  dispatch(setExpenseId(expense._id)); 
+  dispatch(setBudgetDetails({ category, expenses })); 
+  navigate("/EditExpense"); 
 };
 
   return (
@@ -80,8 +78,8 @@ const handleEdit = (expense) => {
             </thead>
             <tbody>
               {expenseList
-                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort by createdAt in descending order
-                .slice(0, 5) // Get the last 5 added expenses
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) 
+                .slice(0, 5) 
                 .map((expense) => {
               
 

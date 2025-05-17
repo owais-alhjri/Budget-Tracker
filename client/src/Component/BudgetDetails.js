@@ -18,12 +18,11 @@ const BudgetDetails = () => {
   const category = useSelector((state)=>state.budgets.category);
   const expenses = useSelector((state)=>state.budgets.expenses);
 
-  const [localExpenses, setLocalExpenses] = useState(expenses); // Local state
-  const [currentCategory, setCategory] = useState(category); // Reactive category state
+  const [localExpenses, setLocalExpenses] = useState(expenses); 
+  const [currentCategory, setCategory] = useState(category); 
 
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
-  //console.log("Redux state in BudgetDetails:", { category, expenses });
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
 
@@ -47,7 +46,6 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
   );
 const [categoryList, setCategoryList] = useState([]);
 
-// Add this useEffect to fetch category list
 useEffect(() => {
   const fetchCategories = async () => {
     try {
@@ -65,7 +63,6 @@ useEffect(() => {
   }
 }, [userId]);
 useEffect(() => {
-  // If we receive a categoryId in the state, set it as the current category
   if (location.state?.categoryId && categoryList) {
     const categoryFromId = categoryList.find(cat => cat._id === location.state.categoryId);
     if (categoryFromId) {
@@ -74,7 +71,6 @@ useEffect(() => {
     }
   }
 
-  // Only proceed if we have a valid category
   if (!currentCategory || !currentCategory._id) {
     console.error("Category is missing or invalid.");
     return;
@@ -91,9 +87,8 @@ useEffect(() => {
         (expense) => expense.category?._id === currentCategory._id
       );
       
-      setLocalExpenses(updatedExpenses); // Update the local state
+      setLocalExpenses(updatedExpenses); 
       
-      // Also fetch the full category details to ensure we have all data
       const categoryResponse = await axios.get(
         `${API_URL}/categoryList?user=${userId}`
       );
@@ -118,7 +113,7 @@ useEffect(() => {
 
   if (location.state?.refetch) {
     fetchUpdatedExpenses();
-    navigate(location.pathname, { replace: true }); // Reset the state
+    navigate(location.pathname, { replace: true }); 
   }
 }, [location.state, currentCategory, userId, navigate, dispatch]);
 
@@ -127,12 +122,10 @@ useEffect(() => {
 
     const ctx = chartRef.current.getContext("2d");
 
-    // Cleanup previous chart
     if (chartInstanceRef.current) {
       chartInstanceRef.current.destroy();
     }
 
-    // Create new chart
     chartInstanceRef.current = new Chart(ctx, {
       type: "bar",
       data: {
@@ -144,7 +137,7 @@ useEffect(() => {
             
             backgroundColor: localExpenses.map(
               (_, i) => predefinedColors[i % predefinedColors.length] + "80"
-            ), // 80 = ~50% opacity
+            ), 
             borderColor: localExpenses.map(
               (_, i) => predefinedColors[i % predefinedColors.length]
             ),
@@ -182,7 +175,7 @@ useEffect(() => {
         chartInstanceRef.current.destroy();
       }
     };
-  }, [localExpenses, predefinedColors]); // Update dependency to localExpenses
+  }, [localExpenses, predefinedColors]); 
 
 
   useEffect(() => {
@@ -213,7 +206,7 @@ useEffect(() => {
 
   const handleDelete = async (expenseId) => {
     try {
-      await dispatch(deleteExpense(expenseId)).unwrap(); // Delete from the database
+      await dispatch(deleteExpense(expenseId)).unwrap(); 
       setLocalExpenses((prevExpenses) =>
         prevExpenses.filter((expense) => expense._id !== expenseId)
       ); // Update local state
@@ -223,15 +216,15 @@ useEffect(() => {
   };
 
   const handleEdit = (expenseId) => {
-    dispatch(setExpenseId(expenseId)); // Save the expenseId in Redux
-    navigate("/EditExpense"); // Navigate to EditExpense
+    dispatch(setExpenseId(expenseId)); 
+    navigate("/EditExpense");
   };
 
   const handleDeleteBudget = async (budgetId) => {
     try {
-      await dispatch(deleteBudget(budgetId)).unwrap(); // Dispatch the deleteBudget action
+      await dispatch(deleteBudget(budgetId)).unwrap(); 
       alert("Budget and associated expenses deleted successfully");
-      navigate("/"); // Navigate back to the main page
+      navigate("/"); 
     } catch (error) {
       console.error("Error deleting budget and associated expenses:", error);
       alert("Failed to delete budget and associated expenses. Please try again.");

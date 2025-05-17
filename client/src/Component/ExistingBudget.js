@@ -36,7 +36,7 @@ const handelViewDetails = (category, expenses) => {
     console.error("Category or expenses are missing:", { category, expenses });
     return;
   }
-  dispatch(setBudgetDetails({ category, expenses })); // Dispatch category and filtered expenses
+  dispatch(setBudgetDetails({ category, expenses })); 
   navigate("/BudgetDetails");
 };
 
@@ -124,7 +124,7 @@ const handelViewDetails = (category, expenses) => {
                   )}
                 </div>
                 <Button
-                  onClick={() => handelViewDetails(category, filteredExpenses)} // Use filteredExpenses here
+                  onClick={() => handelViewDetails(category, filteredExpenses)} 
                   className="btn-view-details"
                   style={{ backgroundColor: category.color }}
                 >

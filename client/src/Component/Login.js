@@ -28,12 +28,12 @@ const Login = () => {
       navigate("/login");
     } else if (isSuccess && user) {
       navigate("/");
-      dispatch(resetState()); // Reset the state after successful navigation
+      dispatch(resetState()); 
     }
   }, [user, isError, isSuccess, navigate, dispatch]);
 
   const handleLogin = (e) => {
-    e.preventDefault(); // Prevent default form submission
+    e.preventDefault(); 
     const userData = {
       email,
       password,
@@ -45,7 +45,6 @@ const Login = () => {
     <div>
       <Container className="login-container">
         <Row className="align-items-center">
-          {/* Left Side: Image */}
           <Col md={6} className="text-center">
             <img
               alt="login"
@@ -54,7 +53,6 @@ const Login = () => {
             />
           </Col>
 
-          {/* Right Side: Login Form */}
           <Col md={6}>
             <div className="login-form-container">
               <h2 className="text-center mb-4">Welcome Back</h2>

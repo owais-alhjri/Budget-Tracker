@@ -4,7 +4,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
 const initialState = {
   expense: [],
-  selectedExpenseId: null, // Add this to the initial state
+  selectedExpenseId: null, 
 };
 
 export const UpdateExpense = createAsyncThunk(
@@ -18,7 +18,7 @@ export const UpdateExpense = createAsyncThunk(
       );
       const updatedExpense = response.data.expense;
       alert("Expense updated successfully");
-      return updatedExpense; // Return the updated expense
+      return updatedExpense;
     } catch (error) {
       console.error("Error updating expense:", error);
       alert("Failed to update expense. Please try again.");
@@ -70,7 +70,7 @@ export const expenseSlice = createSlice({
       state.expense.push(action.payload);
     },
     setExpenseId: (state, action) => {
-      state.selectedExpenseId = action.payload; // Store the selected expense ID
+      state.selectedExpenseId = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -80,7 +80,7 @@ export const expenseSlice = createSlice({
         (exp) => exp._id === updatedExpense._id
       );
       if (index !== -1) {
-        state.expense[index] = updatedExpense; // Update the expense in the Redux state
+        state.expense[index] = updatedExpense;
       }
     })
     .addCase(deleteExpense.fulfilled, (state, action) => {

@@ -29,7 +29,7 @@ useEffect(() => {
   return (
     <div className="app-container">
       <Router>
-        <Header /> {/* Move Header inside Router */}
+        <Header /> 
         <Container>
           <InactivityHandler />
           <Row>

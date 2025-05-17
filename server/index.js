@@ -64,19 +64,16 @@ app.post("/registerUser", async (req, res)=>{
       try {
         const { email, password } = req.body;
     
-        // Check if the user exists
         const user = await UserModel.findOne({ email: email });
         if (!user) {
           return res.status(404).json({ msg: "User not found" });
         }
     
-        // Validate the password
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) {
           return res.status(401).json({ msg: "Authentication failed" });
         }
     
-        // If authentication is successful, return the user
         res.status(200).json({ user, msg: "Success" });
       } catch (error) {
         console.error("Error during login:", error);
@@ -216,15 +213,11 @@ app.put(
         return res.status(404).json({ error: "User not found" });
       }
 
-      // Update name
       userToUpdate.name = name;
 
-      // Handle profile picture update
       if (req.file) {
-        // A new profile picture was uploaded
         const profilePic = req.file.filename;
         
-        // If there's an existing profile pic that's not the default, delete it
         if (userToUpdate.profilePic && userToUpdate.profilePic !== 'user.png') {
           const oldFilePath = path.join(
             __dirname,
@@ -232,28 +225,22 @@ app.put(
             userToUpdate.profilePic
           );
           
-          // Try to delete the old file (don't block the operation if it fails)
           try {
             fs.unlinkSync(oldFilePath);
             console.log("Old file deleted successfully");
           } catch (err) {
             console.error("Error deleting file:", err);
-            // Continue with the update even if file deletion fails
           }
         }
         
-        // Set the new profile picture
         userToUpdate.profilePic = profilePic;
       }
 
-      // Always hash the password for security
       const hashedPassword = await bcrypt.hash(password, 10);
       userToUpdate.password = hashedPassword;
 
-      // Save the updated user
       await userToUpdate.save();
 
-      // Return the updated user data
       res.status(200).json({ 
         user: userToUpdate, 
         msg: "Profile updated successfully" 
@@ -278,16 +265,13 @@ app.delete("/deleteBudget/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Check if the budget exists
     const budget = await BudgetModel.findById(id);
     if (!budget) {
       return res.status(404).json({ error: "Budget not found" });
     }
 
-    // Delete all expenses associated with this budget
     await ExpenseModel.deleteMany({ category: id });
 
-    // Delete the budget
     await BudgetModel.findByIdAndDelete(id);
 
     res.status(200).json({ message: "Budget and associated expenses deleted successfully" });

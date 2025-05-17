@@ -1,9 +1,9 @@
-import { Button, Container, Row, Col, Table } from "reactstrap";
+import {  Container, Row, Col } from "reactstrap";
 import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useEffect, useState } from "react";
-import { deleteUser, registerUser } from "../Features/UserSlice";
+import {  registerUser } from "../Features/UserSlice";
 import { UserSchemaValidation } from "../Validation/UserValidation";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";

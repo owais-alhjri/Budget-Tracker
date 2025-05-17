@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Col, Container, Input, Row, Button } from "reactstrap";
+import { Col, Container, Input, Row } from "reactstrap";
 import { createExpense } from "../Features/ExpenseSlice.js";
 
 const Expense = () => {
@@ -39,7 +39,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
     }, [userId]); 
 
   const handleCategoryChange = (e) => {
-    setSelectedCategory(e.target.value); // Update selected category
+    setSelectedCategory(e.target.value); 
   };
 
   return (

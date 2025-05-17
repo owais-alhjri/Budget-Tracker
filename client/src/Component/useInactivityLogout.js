@@ -22,12 +22,11 @@ const useInactivityLogout = (timeout = 15 * 60 * 1000) => {
     };
 
     if (user) {
-      // Add event listeners only if the user is logged in
       window.addEventListener("mousemove", resetTimer);
       window.addEventListener("keydown", resetTimer);
       window.addEventListener("click", resetTimer);
 
-      resetTimer(); // Start the timer
+      resetTimer(); 
     }
 
     return () => {
@@ -36,7 +35,7 @@ const useInactivityLogout = (timeout = 15 * 60 * 1000) => {
       window.removeEventListener("keydown", resetTimer);
       window.removeEventListener("click", resetTimer);
     };
-  }, [dispatch, navigate, timeout, user]); // Add `user` to the dependency array
+  }, [dispatch, navigate, timeout, user]); 
 };
 
 export default useInactivityLogout;

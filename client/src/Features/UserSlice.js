@@ -2,7 +2,6 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
-// Load user data from localStorage on startup
 const initialState = {
   user: JSON.parse(localStorage.getItem("user")) || null,
   isLoading: false,
@@ -40,19 +39,18 @@ export const updateUserProfile = createAsyncThunk(
     } catch (error) {
       console.log(error);
       alert("Failed to update profile. Please try again.");
-      throw error; // Throw the error to handle it in the component
+      throw error; 
     }
   }
 );
 
-// Your other thunks remain the same
 export const logout = createAsyncThunk("users/logout", async () => {
   try {
     const response = await axios.post(`${API_URL}/logout`);
     console.log(response);
     alert("You are logged out");
     localStorage.removeItem("user");
-    return true; // Return a success flag
+    return true; 
   } catch (error) {
     console.log(error);
     alert("Failed to log out. Please try again.");
@@ -99,7 +97,6 @@ export const userSlice = createSlice({
   name: "users",
   initialState,
   reducers: {
-    // Your other reducers remain the same
     addUser: (state, action) => {
       state.user.push(action.payload);
     },
@@ -152,16 +149,16 @@ export const userSlice = createSlice({
         state.isError = false;
       })
       .addCase(logout.fulfilled, (state) => {
-        state.user = null; // Clear the user data
+        state.user = null; 
         state.isSuccess = false;
         state.isError = false;
-        localStorage.removeItem("user"); // Clear the user data from localStorage
+        localStorage.removeItem("user"); 
       })
       .addCase(updateUserProfile.fulfilled, (state, action) => {
         state.user = action.payload;
         state.isLoading = false;
         state.isSuccess = true;
-        // This is the important part - update localStorage with the new user data
+    
         localStorage.setItem("user", JSON.stringify(action.payload));
       })
       .addCase(updateUserProfile.rejected, (state, action) => {

@@ -24,14 +24,12 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   
-  // Safe initialization for user data
   const [userName, setUserName] = useState("");
   const [pwd, setPwd] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [profilePic, setProfilePic] = useState(null);
   const [previewPic, setPreviewPic] = useState("");
 
-  // Effect to initialize state from user data when available
   useEffect(() => {
     if (user) {
       setUserName(user.name || "");
@@ -40,7 +38,6 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
       setPreviewPic(user.profilePic || "user.png");
       setLoading(false);
     } else {
-      // Redirect if no user after a short delay
       const timer = setTimeout(() => {
         if (!user) {
           navigate("/login");
@@ -51,12 +48,10 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
     }
   }, [user, navigate]);
 
-  // Handle file selection
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setProfilePic(file);
-      // Create a preview URL
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewPic(reader.result);

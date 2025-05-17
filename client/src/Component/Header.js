@@ -13,14 +13,14 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      await dispatch(logout()).unwrap(); // Wait for the logout action to complete
-      navigate("/login"); // Navigate to the login page
+      await dispatch(logout()).unwrap();
+      navigate("/login"); 
     } catch (error) {
       console.error("Logout failed:", error);
     }
   };
 
-  const email = useSelector((state) => state.users.user?.email || null); // Safely access email
+  const email = useSelector((state) => state.users.user?.email || null); 
 
   return (
     <Navbar className="header">
