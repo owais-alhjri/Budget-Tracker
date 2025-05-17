@@ -10,8 +10,9 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
-import dotenv from "dotenv";
-dotenv.config({ path: "../.env" });
+
+import 'dotenv/config'
+
 const app = express();
 app.use(express.json());
 app.use(cors());
