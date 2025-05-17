@@ -60,20 +60,20 @@ export const logout = createAsyncThunk("users/logout", async () => {
   }
 });
 
-export const login = createAsyncThunk(`${API_URL}/login`, async (userData) => {
-  try {
-    const response = await axios.post(`${API_URL}/login`, {
-      email: userData.email,
-      password: userData.password,
-    });
-    const user = response.data.user;
-    alert("Logged in successfully");
-    return user;
-  } catch (error) {
-    const errorMessage = error.response?.data?.msg || "Invalid credentials";
-    alert(errorMessage);
-    throw new Error(errorMessage);
-  }
+export const login = createAsyncThunk("users/login", async (userData) => {
+try {
+  const response = await axios.post(`${API_URL}/login`, {
+    email: userData.email,
+    password: userData.password,
+  });
+  console.log("Login response:", response.data);
+  const user = response.data.user;
+  return user;
+} catch (error) {
+  console.error("Login error details:", error);
+  console.error("API URL used:", `${API_URL}/login`);
+  throw error;
+}
 });
 
 export const registerUser = createAsyncThunk(

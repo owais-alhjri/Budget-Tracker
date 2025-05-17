@@ -16,7 +16,10 @@ import EditExpense from "./Component/EditExpense.js";
 
 function App() {
   const dispatch = useDispatch();
-
+useEffect(() => {
+  console.log("API URL from env:", process.env.REACT_APP_API_URL);
+  console.log("API URL being used:", process.env.REACT_APP_API_URL || 'http://localhost:3001');
+}, []);
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
